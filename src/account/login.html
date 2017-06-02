@@ -1,0 +1,29 @@
+<template>
+    <require from="./login.scss"></require>
+    <section class="au-animate login-wrapper">
+        <h2>${heading}</h2>
+        <form role="form" submit.delegate="Login()">
+            <md-input 
+                md-label="Repository URL" 
+                md-value.bind="repositoryUrl" 
+                md-readonly="true" ></md-input>
+
+            <md-input 
+                md-label="Username" 
+                required="true" 
+                md-value.bind="userName & validate:rules" 
+                md-disabled.bind="isLoginInProgress" 
+                md-validate="true"></md-input>
+
+            <md-input 
+                md-type="password" 
+                required="true" 
+                md-label="Password" 
+                md-value.bind="password & validate:rules" 
+                md-disabled.bind="isLoginInProgress"></md-input>
+
+            <div class="login-error"  style="${error && error.length ? 'opacity: 1;' : 'opacity: 0;' }">${error}</div>            
+            <button md-button type="submit" md-disabled.bind="isLoginInProgress">Log in</button>
+        </form>
+    </section>
+</template>

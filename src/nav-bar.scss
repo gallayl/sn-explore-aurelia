@@ -1,3 +1,29 @@
+$nav-primary-color: #333;
+
 .navbar{
-    background: transparent;
+    
+    & nav.primary, & .nav-wrapper{
+        background: transparent;
+    }
+    
+    .nav-wrapper{
+
+        .brand-logo{
+            display: inline-flex !important;
+            color: $nav-primary-color;
+            display: inline-block;
+            padding: 5px 25px;
+            height: 100%;
+
+            span {
+                padding: 0 10px;
+                display: inline-block;
+                line-height: 170%;
+            }
+        }
+
+        a.nav-item {
+            color: $nav-primary-color;
+        }
+    }
 }
