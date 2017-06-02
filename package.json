@@ -23,7 +23,6 @@
   "scripts": {
     "start": "nps",
     "test": "nps test",
-    "precommit": "npm run lint",
     "commit": "git-cz"
   },
   "jest": {
@@ -79,6 +78,7 @@
     "copy-webpack-plugin": "4.0.1",
     "cross-env": "4.0.0",
     "css-loader": "0.28.1",
+    "cz-conventional-changelog": "^2.0.0",
     "expose-loader": "0.7.3",
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "0.11.1",
@@ -133,5 +133,8 @@
     "jquery": "3.2.1",
     "materialize-css": "^0.98.2",
     "sn-controls-aurelia": "^1.0.0"
+  },
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
   }
 }
