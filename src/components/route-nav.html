@@ -1,0 +1,8 @@
+<template bindable="router">
+  <require from="nav-bar.scss"></require>
+    <ul class="hide-on-med-and-down right">
+        <li md-waves repeat.for="row of router.navigation" class="${row.isActive ? 'active' : ''}" style="${row.settings.show ? '' : 'display: none;'}">
+          <a class="nav-item" data-toggle="collapse" data-target="#skeleton-navigation-navbar-collapse.in" href.bind="row.href">${row.title}</a>
+        </li>
+    </ul>
+</template>

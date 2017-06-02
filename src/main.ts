@@ -2,12 +2,14 @@
 // we want font-awesome to load as soon as possible to show the fa-spinner
 import '../static/styles.css';
 import 'font-awesome/css/font-awesome.css';
+
+import 'sn-controls-aurelia';
+import 'aurelia-validation';
+
 import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
 import * as Bluebird from 'bluebird';
 import { Repository } from "sn-client-js";
-import 'sn-controls-aurelia';
-import 'aurelia-validation';
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });
@@ -16,6 +18,7 @@ export async function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
     .developmentLogging()
+    .feature(PLATFORM.moduleName('components/index'))
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('sn-controls-aurelia'));
 
