@@ -2,7 +2,7 @@ import { Aurelia, autoinject } from 'aurelia-framework';
 import { Router, RouterConfiguration, PipelineStep, 
   NavigationInstruction, Next, Redirect } from 'aurelia-router';
 import { PLATFORM } from 'aurelia-pal';
-import { Repository, HttpProviders, Authentication, ContentTypes } from 'sn-client-js';
+import { Repository, Authentication } from 'sn-client-js';
 
 const ROLE_LOGGED_IN: string = 'ROLE_LOGGED_IN';
 const ROLE_VISITOR_ONLY: string = 'ROLE_VISITOR_ONLY';
@@ -10,20 +10,18 @@ const ROLE_VISITOR_ONLY: string = 'ROLE_VISITOR_ONLY';
 @autoinject
 export class App {
 
-  content: ContentTypes.Task;
   router: Router;
-  constructor(private snService: Repository.BaseRepository<any, any>) {
-    this.content = new ContentTypes.Task({DueDate: new Date(), Name: "MockTask"}, this.snService);
-  }
+  constructor(private snService: Repository.BaseRepository<any, any>) { }
 
   configureRouter(config: RouterConfiguration, router: Router) {
-    config.title = 'sense NET JWT Login Tutorial';
+    config.title = 'sensenet explore';
     config.addAuthorizeStep(SnClientAuthorizeStep);
     config.map([
       { route: ['', 'welcome'], name: 'welcome',      moduleId: PLATFORM.moduleName('./welcome'),     title: 'Welcome',      settings: { show: true, roles: [] },                 nav: true},
-      { route: 'login',         name: 'login',        moduleId: PLATFORM.moduleName('./account/login'),       title: 'Log in',       settings: { show: true, roles: [ROLE_VISITOR_ONLY] },nav: true},
-      { route: 'users',         name: 'users',        moduleId: PLATFORM.moduleName('./users'),       title: 'Github Users', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
-      { route: 'child-router',  name: 'child-router', moduleId: PLATFORM.moduleName('./child-router'),title: 'Child Router', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
+      { route: 'demo',          name: 'demo',        moduleId: PLATFORM.moduleName('./demo/demo'),       title: 'Demos',       settings: { show: true, roles: [] }, nav: true},
+      { route: 'login',         name: 'login',        moduleId: PLATFORM.moduleName('./account/login'),       title: 'Log in',       settings: { show: true, roles: [ROLE_VISITOR_ONLY] }, nav: true},
+      // { route: 'users',         name: 'users',        moduleId: PLATFORM.moduleName('./users'),       title: 'Github Users', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
+      // { route: 'child-router',  name: 'child-router', moduleId: PLATFORM.moduleName('./child-router'),title: 'Child Router', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
       { route: 'logout',        name: 'logout',       moduleId: PLATFORM.moduleName('./account/logout'),      title: 'Log out',      settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
     ]);
 
@@ -58,7 +56,7 @@ class SnClientAuthorizeStep implements PipelineStep {
         return next.cancel(new Redirect('login'));
       }
     }
-    if (instructions.some(i=> i.config.settings.roles.indexOf(ROLE_VISITOR_ONLY) !== -1)){
+    if (instructions.some(i => i.config.settings.roles.indexOf(ROLE_VISITOR_ONLY) !== -1)){
       if (authenticationState !== Authentication.LoginState.Unauthenticated){
         return next.cancel();
       }
