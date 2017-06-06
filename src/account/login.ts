@@ -1,19 +1,21 @@
 import { autoinject } from 'aurelia-framework';
-import { Repository } from "sn-client-js";
-import { Router } from "aurelia-router";
+import { Repository } from 'sn-client-js';
+import { Router } from 'aurelia-router';
 import { ValidationController, ValidationRules } from 'aurelia-validation';
 import { MaterializeFormValidationRenderer } from 'aurelia-materialize-bridge';
 
 
 @autoinject
 export class Login {
-    private readonly heading = "Login to sense NET ECM"
+    private readonly heading = 'Login to sense NET ECM'
     public userName: string = '';
     public password: string = '';
 
     private error: string = '';
 
-    private isLoginInProgress: boolean;
+    private canLogin: boolean = false;
+
+    private isLoginInProgress: boolean = false;
 
     private readonly repositoryUrl: string;
 
@@ -34,14 +36,15 @@ export class Login {
             .required()
         .rules;
 
-    validateModel() {
-        this.controller.validate().then(v => {
-            if (v.valid) {
-                this.error = '';
-            } else {
-                this.error = 'You have errors!';
-            }
-        });
+    async validateModel() {
+        const v = await this.controller.validate()
+        if (v.valid) {
+            this.error = '';
+            this.canLogin = true;
+        } else {
+            this.error = 'You have errors!';
+            this.canLogin = false;
+        }
     }
 
     public async Login() {
@@ -50,10 +53,10 @@ export class Login {
             .subscribe(success => {
                 if (success) {
                     this.router.navigate('/');
-                    this.error = "";
+                    this.error = '';
                 };
                 this.isLoginInProgress = false;
-                this.error = "Error: failed to log in."
+                this.error = 'Error: failed to log in.'
             }, err => {
                 // console.error(err);
                 this.error = err;
