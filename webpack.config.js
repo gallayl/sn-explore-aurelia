@@ -12,7 +12,7 @@ const when = (condition, config, negativeConfig) =>
   condition ? ensureArray(config) : ensureArray(negativeConfig)
 
 // primary config:
-const title = 'Aurelia Navigation Skeleton';
+const title = 'sensenet explore';
 const outDir = path.resolve(__dirname, 'dist');
 const srcDir = path.resolve(__dirname, 'src');
 const nodeModulesDir = path.resolve(__dirname, 'node_modules');
@@ -33,7 +33,7 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   },
   entry: {
     app: ['aurelia-bootstrapper'],
-    vendor: ['bluebird', 'jquery', 'bootstrap'],
+    vendor: ['bluebird', 'jquery', 'materialize-css', 'aurelia-materialize-bridge'],
   },
   output: {
     path: outDir,
@@ -93,10 +93,7 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   plugins: [
     new AureliaPlugin(),
     new ProvidePlugin({
-      'Promise': 'bluebird',
-      '$': 'jquery',
-      'jQuery': 'jquery',
-      'window.jQuery': 'jquery',
+      'Promise': 'bluebird'
     }),
     new TsConfigPathsPlugin(),
     new CheckerPlugin(),

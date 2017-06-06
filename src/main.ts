@@ -9,7 +9,7 @@ import 'aurelia-validation';
 import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
 import * as Bluebird from 'bluebird';
-import { Repository } from "sn-client-js";
+import { Repository } from 'sn-client-js';
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });

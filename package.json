@@ -131,9 +131,8 @@
     "bootstrap": "3.3.7",
     "font-awesome": "4.7.0",
     "isomorphic-fetch": "2.2.1",
-    "jquery": "3.2.1",
-    "materialize-css": "^0.98.2",
-    "sn-controls-aurelia": "^1.0.0"
+    "jquery": "^3.2.1",
+    "materialize-css": "^0.98.2"
   },
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"
