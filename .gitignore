@@ -6,3 +6,4 @@ yarn-error.log
 /test/*coverage
 /test/coverage*
 /.chrome
+package-lock.json
