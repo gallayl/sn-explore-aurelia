@@ -22,7 +22,7 @@
                 md-value.bind="password & validate:rules" 
                 md-disabled.bind="isLoginInProgress"></md-input>
 
-            <div class="login-error"  style="${error && error.length ? 'opacity: 1;' : 'opacity: 0;' }">${error}</div>            
+            <div class="login-error"  css="${error && error.length ? 'opacity: 1;' : 'opacity: 0;' }">${error}</div>            
             <md-progress if.bind="isLoginInProgress"></md-progress>
             <button md-button="disabled.bind:!canLogin" type="submit">Log in</button>
         </form>
