@@ -1,16 +1,12 @@
-import { ContentTypes, Mocks } from "sn-client-js";
-import { bindable } from "aurelia-templating";
+import { ContentTypes, Mocks } from 'sn-client-js';
+import { bindable } from 'aurelia-templating';
 
 export class Task {
     
     @bindable
     task: ContentTypes.Task;
-
     repo: Mocks.MockRepository;
 
-    /**
-     *
-     */
     constructor() {
         this.repo = new Mocks.MockRepository();
         this.task = new ContentTypes.Task({
