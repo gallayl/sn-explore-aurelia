@@ -30,10 +30,11 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [srcDir, 'node_modules'],
+
   },
   entry: {
     app: ['aurelia-bootstrapper'],
-    vendor: ['bluebird', 'jquery', 'materialize-css', 'aurelia-materialize-bridge'],
+    vendor: ['bluebird', 'jquery', 'materialize-css', 'aurelia-materialize-bridge', 'quill'],
   },
   output: {
     path: outDir,

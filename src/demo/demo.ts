@@ -10,6 +10,7 @@ export class Demo {
         config.map([
             { route: ['', 'task'], name: 'task', moduleId: PLATFORM.moduleName('./task'), settings: { roles: [], show: true }, nav: true, title: 'Task' },
             { route: ['user'], name: 'user', moduleId: PLATFORM.moduleName('./user'), settings: { roles: [], show: true }, nav: true, title: 'User' },
+            { route: ['email'], name: 'email', moduleId: PLATFORM.moduleName('./email'), settings: { roles: [], show: true }, nav: true, title: 'E-mail' },
 
         ]);
 
