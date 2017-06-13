@@ -103,7 +103,7 @@
     "protractor": "5.1.1",
     "rimraf": "^2.6.1",
     "sass-loader": "^6.0.5",
-    "sn-client-js": "^2.0.0-RC.3-development3",
+    "sn-client-js": "^2.0.0-RC.4",
     "style-loader": "0.17.0",
     "ts-jest": "20.0.0",
     "ts-node": "3.0.4",
