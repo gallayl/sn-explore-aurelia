@@ -84,7 +84,7 @@ module.exports = {
         }
       },
       server: {
-        default: `webpack-dev-server -d --devtool '#source-map' --inline --env.server`,
+        default: `webpack-dev-server -d --devtool '#source-map' --inline --env.server --host snbppc109`,
         extractCss: `webpack-dev-server -d --devtool '#source-map' --inline --env.server --env.extractCss`,
         hmr: `webpack-dev-server -d --devtool '#source-map' --inline --hot --env.server`
       },
