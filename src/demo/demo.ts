@@ -4,14 +4,9 @@ import { PLATFORM } from 'aurelia-pal';
 export class Demo {
     router: Router;
 
-    heading = 'Demo Contents';
-
     configureRouter(config: RouterConfiguration, router: Router) {
         config.map([
-            { route: ['', 'task'], name: 'task', moduleId: PLATFORM.moduleName('./task'), settings: { roles: [], show: true }, nav: true, title: 'Task' },
-            { route: ['user'], name: 'user', moduleId: PLATFORM.moduleName('./user'), settings: { roles: [], show: true }, nav: true, title: 'User' },
-            { route: ['email'], name: 'email', moduleId: PLATFORM.moduleName('./email'), settings: { roles: [], show: true }, nav: true, title: 'E-mail' },
-
+            { route: ['', 'content-crud'], name: 'content-crud', moduleId: PLATFORM.moduleName('./content-crud'), settings: { roles: [], show: true }, nav: true, title: 'Content CRUD' },
         ]);
 
         this.router = router;

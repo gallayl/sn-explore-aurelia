@@ -1,0 +1,20 @@
+<template>
+    <div class="row" style='width: 500px;'>
+        <div class="col xl6 l6 m6 s12">
+            <select md-select="label: Select a content type" value.bind="content">
+                <option model.bind="undefined" disabled selected>Select a content type</option>
+                <option repeat.for='contentOption of contents' model.bind='contentOption'>${contentOption.Name}</option>
+            </select>
+        </div>
+
+        <div class="col xl6 l6 m6 s12">
+            <select md-select="label: Select Action" value.bind="actionName">
+                <option model.bind="undefined">(all)</option>
+                <option value="new">New</option>
+                <option value="edit">Edit</option>
+                <option value="view">View</option>
+            </select>
+        </div>
+    </div>
+    <content-view content.bind="content" action-name.bind='actionName'></content-view>
+</template>
