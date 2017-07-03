@@ -1,0 +1,7 @@
+<template>
+    <require from='./explore.scss'></require>
+    <div class='explore-wrapper'>
+        <tree content.bind="RootContent" selection.two-way='selection'></tree>
+        <content-view content.bind='selection'></content-view>
+    </div>
+</template>

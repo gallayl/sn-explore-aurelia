@@ -16,12 +16,12 @@ export class App {
   configureRouter(config: RouterConfiguration, router: Router) {
     config.title = 'sensenet explore';
     config.addAuthorizeStep(SnClientAuthorizeStep);
+    config.fallbackRoute('');
     config.map([
-      { route: ['', 'welcome'], name: 'welcome',      moduleId: PLATFORM.moduleName('./welcome'),     title: 'Welcome',      settings: { show: true, roles: [] },                 nav: true},
-      { route: 'demo',          name: 'demo',        moduleId: PLATFORM.moduleName('./demo/demo'),       title: 'Demos',       settings: { show: true, roles: [] }, nav: true},
+      { route: ['', 'welcome'], name: 'welcome',      moduleId: PLATFORM.moduleName('./welcome'),             title: 'Welcome',      settings: { show: true, roles: [] },                 nav: true},
+      { route: 'demo',          name: 'demo',         moduleId: PLATFORM.moduleName('./demo/demo'),           title: 'Demos',        settings: { show: true, roles: [] }, nav: true},
       { route: 'login',         name: 'login',        moduleId: PLATFORM.moduleName('./account/login'),       title: 'Log in',       settings: { show: true, roles: [ROLE_VISITOR_ONLY] }, nav: true},
-      // { route: 'users',         name: 'users',        moduleId: PLATFORM.moduleName('./users'),       title: 'Github Users', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
-      // { route: 'child-router',  name: 'child-router', moduleId: PLATFORM.moduleName('./child-router'),title: 'Child Router', settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
+      { route: 'explore',       name: 'explore',      moduleId: PLATFORM.moduleName('./explore/explore'),     title: 'Explore',      settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
       { route: 'logout',        name: 'logout',       moduleId: PLATFORM.moduleName('./account/logout'),      title: 'Log out',      settings: { show: true, roles: [ROLE_LOGGED_IN] },   nav: true},
     ]);
 

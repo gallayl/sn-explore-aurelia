@@ -1,5 +1,5 @@
 import { autoinject } from 'aurelia-framework';
-import { Repository } from 'sn-client-js';
+import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
 import { ValidationController, ValidationRules } from 'aurelia-validation';
 import { MaterializeFormValidationRenderer } from 'aurelia-materialize-bridge';
@@ -30,10 +30,10 @@ export class Login {
 
     public rules = ValidationRules
         .ensure('userName')
-            .required()
-            .minLength(4)
+        .required()
+        .minLength(4)
         .ensure('password')
-            .required()
+        .required()
         .rules;
 
     async validateModel() {
@@ -52,11 +52,16 @@ export class Login {
         const success = this.snService.Authentication.Login(this.userName, this.password)
             .subscribe(success => {
                 if (success) {
-                    this.router.navigate('/');
-                    this.error = '';
-                };
-                this.isLoginInProgress = false;
-                this.error = 'Error: failed to log in.'
+
+                    // this.snService.Load(3534, {}, null, ContentTypes.PortalRoot).subscribe(root=>{
+                    //     alert(JSON.stringify(root.options));
+                        this.router.navigate('/');
+                        this.error = '';
+                    // });
+                } else {
+                    this.isLoginInProgress = false;
+                    this.error = 'Error: failed to log in.'
+                }
             }, err => {
                 // console.error(err);
                 this.error = err;

@@ -22,18 +22,19 @@ const cssRules = [
   { loader: 'css-loader' },
   {
     loader: 'postcss-loader',
-    options: { plugins: () => [require('autoprefixer')({ browsers: ['last 2 versions'] })] }
+    options: { plugins: () => [require('autoprefixer')({ browsers: ['last 2 versions'] })]}
   }
 ]
 
-module.exports = ({ production, server, extractCss, coverage } = {}) => ({
+module.exports = ({production, server, extractCss, coverage} = {}) => ({
   resolve: {
     extensions: ['.ts', '.js'],
     modules: [srcDir, 'node_modules'],
+
   },
   entry: {
     app: ['aurelia-bootstrapper'],
-    vendor: ['bluebird', 'jquery', 'materialize-css', 'aurelia-materialize-bridge', 'quill', 'parchment'],
+    vendor: ['bluebird', 'jquery', 'materialize-css', 'aurelia-materialize-bridge', 'quill'],
   },
   output: {
     path: outDir,
@@ -49,9 +50,9 @@ module.exports = ({ production, server, extractCss, coverage } = {}) => ({
   },
   module: {
     rules: [
-      {
+      { 
         test: /\.scss$/,
-        use: ['css-loader', 'sass-loader']
+        use: [ 'css-loader', 'sass-loader' ]
       },
       // CSS required in JS/TS files should use the style-loader that auto-injects it into the website
       // only when the issuer is a .js/.ts file, so the loaders are not applied inside html templates

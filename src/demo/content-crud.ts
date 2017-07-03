@@ -16,9 +16,10 @@ export class ContentCrud {
         this.repo = new Mocks.MockRepository();
         this.contents = [
             new ContentTypes.Task({
-                DueDate: new Date(),
+                // DueDate: new Date(),
+                StartDate: "2017-06-30T09:12:00.000Z",
                 Name: 'Demo Task'
-            }, this.repo),
+            } as any, this.repo),
             new ContentTypes.Email({
                 Name: 'Demo E-Mail'
             }, this.repo),
