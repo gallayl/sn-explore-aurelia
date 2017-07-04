@@ -2,6 +2,10 @@
     display: flex;
     flex-direction: row;
 
+    &>tree{
+        margin-right: 15px;
+    }
+
     tree {
         margin-top: 15px;
         flex-grow: 2;

@@ -15,7 +15,7 @@ export class Index{
 
     activate(){
         this.snService.Load('/Root', {
-            select: ['Name', 'DisplayName', 'Id', 'Path']
+            select: 'all'
         }).subscribe(root=>{
             this.RootContent = root;
         });
