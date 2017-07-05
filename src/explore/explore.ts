@@ -10,7 +10,7 @@ export class Index{
 
     @bindable
     Selection: Content;
-    constructor(private snService: Repository.BaseRepository<any, any>) {
+    constructor(private snService: Repository.BaseRepository) {
     }
 
     activate(){

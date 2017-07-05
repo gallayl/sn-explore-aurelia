@@ -8,7 +8,7 @@ export class Logout {
     heading = 'Log out from sensenet ECM';
     confirmText = 'Really log out?';
     constructor(
-        private snService: Repository.BaseRepository<any, any>,
+        private snService: Repository.BaseRepository,
         private router: Router
     ) { }
 

@@ -20,7 +20,7 @@ export class Login {
     private readonly repositoryUrl: string;
 
     constructor(
-        private snService: Repository.BaseRepository<any, any>,
+        private snService: Repository.BaseRepository,
         private router: Router,
         private controller: ValidationController
     ) {
