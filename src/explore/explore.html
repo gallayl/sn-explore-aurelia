@@ -1,19 +1,28 @@
 <template>
     <require from='./explore.scss'></require>
-    <section class="au-animate login-wrapper">
-        <md-card md-title="Explore">
+    <section class="au-animate">
+        <!--<md-card md-title="Explore">-->
             <div class='explore-wrapper row'>
-                <tree class="col xl2 l4 m5 s6" content.bind="RootContent" selection.two-way='Selection'></tree>
-                <div class="col xl10 l8 m7 s6 content-wrapper">
-                    <div class="content-view" if.bind="Selection">
-                        <h5>${actionName + ' ' + Schema.DisplayName}</h5>
-                        <content-view content.bind='Selection'></content-view>
+                <md-card class="col xl2 l4 m5 s6" >
+                    <tree content.bind="RootContent" selection.two-way='Selection'></tree>
+                </md-card>
+                <md-card class="col xl10 l8 m7 s6" 
+                    if.bind="Selection" 
+                    md-title.bind="actionName + ' ' + Schema.DisplayName">
+                    <div class="content-wrapper">
+                        <div class="content-view">
+                            <content-view content.bind='Selection'></content-view>
+                        </div>
                     </div>
-                </div>
-                <div class="col xl10 l8 m7 s6 content-wrapper" if.bind="!Selection">
+                </md-card>
+                <md-card class="col xl10 l8 m7 s6" 
+                    if.bind="!Selection"
+                    md-title="Dashboard">
+                <div class="dashboard-wrapper">
                     <h4>Dashboard</h4>
                 </div>
+                </md-card>
             </div>
-        </md-card>
+        <!--</md-card>-->
     </section>
 </template>

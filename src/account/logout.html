@@ -1,12 +1,13 @@
 <template>
     <section class="au-animate">
-        <h2>${heading}</h2>
-        <form role="form" submit.delegate="logout()">
-            <div class="form-group">
-                <p class="help-block">${confirmText}</p>            
-            </div>
-            <button type="submit" class="btn btn-default">Yes</button>
-            <button click.delegate="goBack()" class="btn btn-default">No</button>
-        </form>
+        <md-card md-title.bind="heading">
+            <form role="form" submit.delegate="logout()">
+                <div class="form-group">
+                    <p class="help-block">${confirmText}</p>
+                </div>
+                <button type="submit" class="btn btn-default">Yes</button>
+                <button click.delegate="goBack()" class="btn btn-default">No</button>
+            </form>
+        </md-card>
     </section>
 </template>
