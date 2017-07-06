@@ -1,19 +1,15 @@
 .explore-wrapper{
-    display: flex;
-    flex-direction: row;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: space-between;
 
     &>tree{
-        margin-right: 15px;
+        // border-right: 1px solid rgba(0,0,0,.2);
+        // flex-grow: 2;
+        // flex-shrink: 0;
     }
 
-    tree {
-        margin-top: 15px;
-        flex-grow: 2;
-        flex-shrink: 0;
-    }
-
-    content-view{
-        flex-grow: 8;
-        flex-shrink: 1;
+    .content-wrapper{
+        // border-left: 1px solid rgba(0,0,0,.15);
     }
 }
