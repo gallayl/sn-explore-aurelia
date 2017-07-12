@@ -133,13 +133,14 @@
     "aurelia-validation": "^1.0.0",
     "bluebird": "3.5.0",
     "bootstrap": "3.3.7",
+    "cpx": "^1.5.0",
     "font-awesome": "4.7.0",
     "isomorphic-fetch": "2.2.1",
     "jquery": "^3.2.1",
     "materialize-css": "^0.98.2",
     "moment-timezone": "^0.5.13",
     "quill": "^1.2.6",
-    "sn-controls-aurelia": "file:..\\sn-controls-aurelia"
+    "sn-controls-aurelia": "^1.0.0-beta.1"
   },
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"
