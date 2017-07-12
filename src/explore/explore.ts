@@ -1,7 +1,8 @@
-import { autoinject, bindable, computedFrom } from "aurelia-framework";
-import { Repository, Content, ODataApi } from "sn-client-js";
-import { SelectionService } from "sn-controls-aurelia";
+import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
+import { Repository, Content, ODataApi, ContentTypes, ActionName } from "sn-client-js";
+import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
+
 
 @autoinject
 export class Index {
@@ -12,13 +13,19 @@ export class Index {
     @bindable
     Selection: Content;
 
+    @bindable
+    AllowedChildTypes: {new(...args): Content}[] = [];
+
+    @bindable
+    actionName: ActionName = 'view';
+    
+
     constructor(private snService: Repository.BaseRepository, private router: Router) {
     }
 
     @computedFrom('Selection')
     public get Schema() {
         this.router.navigateToRoute('explore', { path: this.Selection.Path }, { replace: true });
-
         return this.Selection && this.Selection.GetSchema();
     }
 
@@ -28,11 +35,23 @@ export class Index {
                 this.Selection = selection;
             });
         }
-
         this.snService.Load('/Root', {
             select: 'all'
         }).subscribe(root => {
             this.RootContent = root;
+        });
+        this.SelectionChanged();
+    }
+
+    SelectionChanged() {
+        this.actionName = 'view';
+        this.Selection.GetEffectiveAllowedChildTypes({
+            select: ['Name']
+        }).subscribe(cts => {
+            this.AllowedChildTypes = cts.map(ct => {
+                return ContentTypes[ct.Name];
+            }).filter(ct=> ct != null);
+            console.log(this.AllowedChildTypes);
         });
     }
 }

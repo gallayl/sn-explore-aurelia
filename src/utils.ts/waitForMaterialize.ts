@@ -16,7 +16,7 @@ export function waitForMaterialize() {
         ma.toast &&
         ma.updateTextFields
       ) {
-        console.log(`waited ${iterations} iterations for Materialize to finish loading`);
+        // console.log(`waited ${iterations} iterations for Materialize to finish loading`);
         window.clearInterval(handler);
         resolve();
       }
