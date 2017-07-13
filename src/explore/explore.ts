@@ -18,6 +18,9 @@ export class Index {
 
     @bindable
     actionName: ActionName = 'view';
+
+    @bindable
+    isMobile: boolean = false;
     
 
     constructor(private snService: Repository.BaseRepository, private router: Router) {
@@ -52,6 +55,12 @@ export class Index {
                 return ContentTypes[ct.Name];
             }).filter(ct=> ct != null);
             console.log(this.AllowedChildTypes);
+        },err=>{
+            this.AllowedChildTypes = [];
         });
+    }
+
+    resize(param){
+        this.isMobile = param.width <= 600;
     }
 }

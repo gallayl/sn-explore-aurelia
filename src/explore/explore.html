@@ -1,11 +1,18 @@
 <template>
     <require from='./explore.scss'></require>
     <section class="au-animate">
-        <div class='explore-wrapper row'>
-            <md-card class="col xl2 l4 m5 s6">
+        <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
+            <md-card if.bind="!isMobile" class="col xl2 l4 m4 hide-on-small-only">
                 <tree content.bind="RootContent" selection.two-way='Selection'></tree>
             </md-card>
-            <md-card class="col xl10 l8 m7 s6" if.bind="Selection" md-title.bind="actionName + ' ' + Schema.DisplayName">
+            
+            <i md-waves class="explore-mobile-nav material-icons left hide-on-med-and-up" 
+                md-sidenav-collapse="ref.bind: sideNav;">menu</i>
+            <md-sidenav view-model.ref="sideNav">
+                <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
+            </md-sidenav>
+
+            <md-card class="col xl10 l8 m8 s12" if.bind="Selection" md-title.bind="actionName + ' ' + Schema.DisplayName">
                 <div class="content-wrapper">
                     <div class="content-view">
                         <content-view content.bind='Selection & debounce:100' action-name.two-way='actionName'></content-view>
@@ -13,7 +20,7 @@
                 </div>
                 <compose view="./explore-fab.html"></compose>
             </md-card>
-            <md-card class="col xl10 l8 m7 s6" if.bind="!Selection" md-title="Dashboard">
+            <md-card class="col xl10 l8 m8 s6" if.bind="!Selection" md-title="Dashboard">
                 <p></p>
             </md-card>
         </div>
