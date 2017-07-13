@@ -1,7 +1,7 @@
 import { autoinject } from 'aurelia-framework';
 import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
-import { ValidationController, ValidationRules } from 'aurelia-validation';
+import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
 import { MaterializeFormValidationRenderer } from 'aurelia-materialize-bridge';
 
 
@@ -19,12 +19,15 @@ export class Login {
 
     private readonly repositoryUrl: string;
 
+    private controller: ValidationController;
+
     constructor(
         private snService: Repository.BaseRepository,
         private router: Router,
-        private controller: ValidationController
+        controllerFactory: ValidationControllerFactory
     ) {
         this.repositoryUrl = this.snService.Config.RepositoryUrl;
+        this.controller = controllerFactory.createForCurrentScope();
         this.controller.addRenderer(new MaterializeFormValidationRenderer())
     }
 
