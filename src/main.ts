@@ -10,7 +10,7 @@ import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
 import * as Bluebird from 'bluebird';
 import { Repository } from 'sn-client-js';
-import { waitForMaterialize } from 'utils.ts/waitForMaterialize';
+import { waitForMaterialize } from 'utils';
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });
@@ -21,7 +21,8 @@ export async function configure(aurelia: Aurelia) {
     .developmentLogging()
     .feature(PLATFORM.moduleName('components/index'))
     .plugin(PLATFORM.moduleName('aurelia-validation'))
-    .plugin(PLATFORM.moduleName('sn-controls-aurelia'));
+    .plugin(PLATFORM.moduleName('sn-controls-aurelia'))
+    .plugin(PLATFORM.moduleName('aurelia-resize'));
 
   // Uncomment the line below to enable animation.
   aurelia.use.plugin(PLATFORM.moduleName('aurelia-animator-css'));
