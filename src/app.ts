@@ -5,6 +5,7 @@ import {
 } from 'aurelia-router';
 import { PLATFORM } from 'aurelia-pal';
 import { Repository, Authentication } from 'sn-client-js';
+import { ContentLogger } from "utils";
 
 const ROLE_LOGGED_IN: string = 'ROLE_LOGGED_IN';
 const ROLE_VISITOR_ONLY: string = 'ROLE_VISITOR_ONLY';
@@ -13,7 +14,7 @@ const ROLE_VISITOR_ONLY: string = 'ROLE_VISITOR_ONLY';
 export class App {
 
   router: Router;
-  constructor(private snService: Repository.BaseRepository) { }
+  constructor(private snService: Repository.BaseRepository, private logger: ContentLogger) { }
 
   configureRouter(config: RouterConfiguration, router: Router) {
     config.title = 'sensenet explore';
@@ -52,7 +53,9 @@ class SnClientAuthorizeStep implements PipelineStep {
   public async run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     const instructions = navigationInstruction.getAllInstructions();
     return new Promise((resolve, reject) => {
-      this.snService.Authentication.State.subscribe(authenticationState => {
+      this.snService.Authentication.State
+      .skipWhile(state => state === Authentication.LoginState.Pending)
+      .subscribe(authenticationState => {
         if (instructions.some(i => i.config.settings.roles.indexOf(ROLE_LOGGED_IN) !== -1)) {
           if (authenticationState !== Authentication.LoginState.Authenticated) {
             return resolve(next.cancel(new Redirect('login')));

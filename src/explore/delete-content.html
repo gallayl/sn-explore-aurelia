@@ -1,0 +1,32 @@
+<template>
+    <require from="./delete-content.scss"></require>
+    <div md-modal="title: 'Delete content(s)'; starting-top: '1%'; ending-top: '90%'; opacity: 0.7;" md-modal.ref="deleteContentModal" class="delete-modal-wrapper">
+        <div class="modal-content">
+            <h4>Delete Content</h4>
+            <p>Are you sure?</p>
+
+            <md-collection>
+                <md-collection-item class="accent-text" repeat.for="content of contents">
+                    <icon icon-name.bind="content.Icon" class="left"></icon>
+                    ${content.Name}
+                    <div class="secondary-content">
+                        ${content.Path}
+                    </div>
+                </md-collection-item>
+            </md-collection>
+
+            <md-checkbox md-checked.bind="permanently">Permanently</md-checkbox>
+
+        </div>
+        <div class="modal-footer">
+            <a click.delegate="delete()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close ${permanently ? 'permanently' : ''}">
+                <i class="material-icons left">${permanently ? 'delete_forever' : 'delete'}</i>
+                ${permanently ? 'Delete permanently' : 'Move to Trash'}
+            </a>
+            <a click.delegate="cancel()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">
+                <i class="material-icons left">clear</i>
+                Cancel
+            </a>
+        </div>
+    </div>
+</template>

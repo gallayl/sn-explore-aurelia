@@ -19,7 +19,7 @@ describe('the App module', () => {
 
   beforeEach(() => {
     mockedRouter = new RouterStub();
-    sut = new App(new Mocks.MockRepository());
+    sut = new App(new Mocks.MockRepository(), null);
     sut.configureRouter(mockedRouter, mockedRouter);
   });
 

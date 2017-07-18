@@ -1,5 +1,7 @@
 <template>
     <require from='./explore.scss'></require>
+    <require from='./add-content'></require>
+    <require from='./explore-edit'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
             <md-card if.bind="!isMobile" class="col xl2 l4 m4 hide-on-small-only">
@@ -11,18 +13,16 @@
             <md-sidenav view-model.ref="sideNav">
                 <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
             </md-sidenav>
+            <div class="content-wrapper col xl10 l8 m8 s12">
+                <explore-edit selection.bind="Selection" ></explore-edit>
+            </div>
 
-            <md-card class="col xl10 l8 m8 s12" if.bind="Selection" md-title.bind="actionName + ' ' + Schema.DisplayName">
-                <div class="content-wrapper">
-                    <div class="content-view">
-                        <content-view content.bind='Selection & debounce:100' action-name.two-way='actionName'></content-view>
-                    </div>
-                </div>
-                <compose view="./explore-fab.html"></compose>
-            </md-card>
             <md-card class="col xl10 l8 m8 s6" if.bind="!Selection" md-title="Dashboard">
                 <p></p>
             </md-card>
         </div>
+        <add-content view-model.ref="addContentComponent" parent.bind="Selection"></add-content>
+        <compose view="./explore-fab.html"></compose>
+
     </section>
 </template>

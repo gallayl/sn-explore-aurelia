@@ -1,0 +1,54 @@
+<template>
+    <require from="./add-content.scss"></require>
+    <div md-modal="starting-top: '1%'; ending-top: '90%'; opacity: 0.7;" md-modal.ref="addContentModal">
+        <div class="modal-content add-content-wrapper">
+            <h4>Create Content</h4>
+
+            <md-progress if.bind="isLoading"></md-progress>
+
+            <div if.bind="!isLoading">
+
+                <div if.bind="errorMessage && errorMessage.length" class="load-error">
+                    ${errorMessage}
+                </div>
+
+                <div if.bind="!errorMessage">
+
+                    <div if.bind="!SelectedSchema">
+                        <h4>Select a Content Type</h4>
+                        <md-collection class="available-type-list">
+                            <md-collection-item repeat.for="schema of AvailableSchemas" class="available-type-item" click.delegate="selectSchema(schema)">
+                                <icon icon-name.bind="schema.Icon"></icon>
+                                <span class="accent-text">${schema.DisplayName}</span>
+                            </md-collection-item>
+                        </md-collection>
+                    </div>
+
+                    <div if.bind="SelectedSchema">
+                        <h4>Create new ${SelectedSchema.DisplayName}</h4>
+                        <content-view content.bind="NewContent" action-name="new"></content-view>
+                    </div>                    
+
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <a if.bind="SelectedSchema" click.delegate="SelectedSchema = null" md-button="flat: true;" class="left">
+                <i class="material-icons left">keyboard_backspace</i>
+                Back
+            </a>
+            <a if.bind="SelectedSchema" click.delegate="create()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">
+                <i class="material-icons left">add</i>
+                Create
+            </a>
+            <a click.delegate="cancel()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">
+                <i class="material-icons left">clear</i>
+                Cancel
+            </a>
+        </div>
+    </div>
+    </div>
+</template>

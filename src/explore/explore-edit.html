@@ -1,0 +1,28 @@
+<template>
+    <require from="./explore-edit.scss"></require>
+    <require from='./delete-content'></require>
+    
+    <md-card if.bind="Selection" class="explore-edit-wrapper" md-title.bind="Schema.DisplayName">
+        <div class="loader-wrapper ${isContentLoading? 'visible' : 'transparent'}">
+            <md-progress></md-progress>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="content-view">
+                <content-view content.bind='Selection' action-name.bind='actionName'></content-view>
+            </div>
+        </div>
+        <div class="toolbar">
+            <a if.bind="showEdit" md-button="flat:true" click.delegate="edit()">
+                <i class="material-icons left">edit</i> Edit
+            </a>
+
+            <a if.bind="canDelete" md-button="flat:true" click.delegate="delete()">
+                <i class="material-icons left">delete</i> Delete
+            </a>
+        </div>
+    </md-card>
+    <delete-content view-model.ref="deleteContentDialog"></delete-content>
+
+
+</template>

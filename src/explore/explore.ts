@@ -2,7 +2,8 @@ import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-fra
 import { Repository, Content, ODataApi, ContentTypes, ActionName } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
-
+import { MdModal } from 'aurelia-materialize-bridge'
+import { AddContent } from "explore/add-content";
 
 @autoinject
 export class Index {
@@ -21,15 +22,10 @@ export class Index {
 
     @bindable
     isMobile: boolean = false;
-    
+
+    addContentComponent: AddContent;
 
     constructor(private snService: Repository.BaseRepository, private router: Router) {
-    }
-
-    @computedFrom('Selection')
-    public get Schema() {
-        this.router.navigateToRoute('explore', { path: this.Selection.Path }, { replace: true });
-        return this.Selection && this.Selection.GetSchema();
     }
 
     activate(params) {
@@ -43,24 +39,14 @@ export class Index {
         }).subscribe(root => {
             this.RootContent = root;
         });
-        this.SelectionChanged();
     }
 
-    SelectionChanged() {
-        this.actionName = 'view';
-        this.Selection.GetEffectiveAllowedChildTypes({
-            select: ['Name']
-        }).subscribe(cts => {
-            this.AllowedChildTypes = cts.map(ct => {
-                return ContentTypes[ct.Name];
-            }).filter(ct=> ct != null);
-            console.log(this.AllowedChildTypes);
-        },err=>{
-            this.AllowedChildTypes = [];
-        });
-    }
 
     resize(param){
         this.isMobile = param.width <= 600;
+    }
+
+    addContent(){
+        this.addContentComponent.open();
     }
 }

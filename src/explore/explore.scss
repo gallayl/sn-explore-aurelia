@@ -1,16 +1,16 @@
 .explore-wrapper{
-    // display: flex;
-    // flex-direction: row;
-    // justify-content: space-between;
 
-    &>tree{
-        // border-right: 1px solid rgba(0,0,0,.2);
-        // flex-grow: 2;
-        // flex-shrink: 0;
-    }
+    .loader-wrapper{
+        &.transparent{
+            opacity: 0;
+        }
 
-    .content-wrapper{
-        // border-left: 1px solid rgba(0,0,0,.15);
+        &.visible{
+            transition-delay: .3s;
+            opacity: 1;
+        }
+
+        transition: opacity ease-in-out .3s;
     }
 
     .explore-mobile-nav{
