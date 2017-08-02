@@ -32,9 +32,9 @@ export class AddContent {
 
     selectSchema(newSchema: Schemas.Schema<Content>) {
         this.SelectedSchema = newSchema;
-        this.NewContent = Content.Create(this.SelectedSchema.ContentType, {
+        this.NewContent = Content.Create({
             Path: this.parent.Path
-        }, this.snService);
+        }, this.SelectedSchema.ContentType, this.snService);
         console.log("Schema changed, create new Content...");
     }
 
@@ -52,7 +52,7 @@ export class AddContent {
         }).subscribe(cts => {
             this.isLoading = false;
             this.AvailableSchemas = cts.map(ct => {
-                return Content.GetSchema(ContentTypes[ct.Name]);
+                return ContentTypes[ct.Name] && Content.GetSchema(ContentTypes[ct.Name]);
             }).filter(ct => ct != null);
             console.log(this.AvailableSchemas);
         }, (err) => {

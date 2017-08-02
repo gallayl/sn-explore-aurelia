@@ -28,15 +28,17 @@ export class ExploreEdit {
         return this.canEdit && this.actionName == 'view';
     }
 
+    @computedFrom('actionName', 'canEdit')
+    public get showDelete(){
+        return this.canDelete && this.actionName == 'view';
+    }
+
     @bindable
     canDelete: boolean = false;
 
 
-
-
     @computedFrom('Selection', 'actionName')
     public get Schema() {
-        this.router.navigateToRoute('explore', { path: this.Selection.Path }, { replace: true });
         return this.Selection && this.Selection.GetSchema();
     }
 
@@ -61,6 +63,17 @@ export class ExploreEdit {
     
     delete(){
         this.deleteContentDialog.open([this.Selection]);
+    }
+
+
+    save(){
+        this.Selection.Save();
+    }
+
+    cancel(){
+        const savedFields = JSON.parse(JSON.stringify(this.Selection.SavedFields));
+        Object.assign(this.Selection, savedFields);
+        this.actionName = 'view';
     }
 
 
