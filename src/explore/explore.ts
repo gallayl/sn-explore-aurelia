@@ -1,5 +1,5 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
-import { Repository, Content, ODataApi, ContentTypes, ActionName } from "sn-client-js";
+import { Repository, Content, ODataApi, ContentTypes, ActionName, Query } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { MdModal } from 'aurelia-materialize-bridge'
@@ -35,6 +35,10 @@ export class Index {
         this.Subscriptions = [];
     }
 
+    GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
+        return new Promise( (resolve, reject) => scope.Children({select: 'all', query: q && q.toString()}).subscribe(resolve, reject));
+    }
+
     detached() {
         this.clearSubscriptions();
     }
@@ -44,9 +48,7 @@ export class Index {
 
     activate(params) {
         if (params.path) {
-            this.snService.Load(params.path, { select: 'all' }).subscribe((selection) => {
-                this.Selection = selection;
-            });
+            this.changePath(params.path);
         }
         this.snService.Load('/Root', {
             select: 'all'
@@ -62,6 +64,12 @@ export class Index {
         this.Selection.GetRepository().Events.OnContentMoved.subscribe(m=>{
             this.router.navigateToRoute('explore', { path: m.Content.Path }, { replace: true });
         })
+    }
+
+    changePath(path: string){
+        this.snService.Load(path, { select: 'all' }).subscribe((selection) => {
+                this.Selection = selection;
+        });
     }
 
 

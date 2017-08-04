@@ -13,13 +13,29 @@
             <md-sidenav view-model.ref="sideNav">
                 <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
             </md-sidenav>
+
+
             <div class="content-wrapper col xl10 l8 m8 s12">
+                <div class='card'>
+                    <div class='card-content'>
+                        <span class='card-title'>
+                            <breadcrumbs selection.two-way="Selection" path-change.call="changePath(path)"></breadcrumbs>
+                        </span>
+                        <content-list scope.bind="Selection" get-items.call="GetSelectedChildren(scope, query)" ></content-list>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OLD VIEW yeee  -->
+            <!-- <div class="content-wrapper col xl10 l8 m8 s12">
                 <explore-edit selection.bind="Selection" ></explore-edit>
             </div>
 
             <md-card class="col xl10 l8 m8 s6" if.bind="!Selection" md-title="Dashboard">
                 <p></p>
-            </md-card>
+            </md-card> -->
+
+
         </div>
         <add-content view-model.ref="addContentComponent" parent.bind="Selection"></add-content>
         <compose view="./explore-fab.html"></compose>
