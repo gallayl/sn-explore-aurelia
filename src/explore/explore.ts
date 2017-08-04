@@ -66,6 +66,15 @@ export class Index {
         })
     }
 
+    editModal: MdModal;
+    EditedContent: Content;
+    async EditItem(content: Content){
+        this.EditedContent = content;
+        this.EditedContent.Reload('edit').subscribe(c=>{
+            this.editModal.open();
+        })
+    }
+
     changePath(path: string){
         this.snService.Load(path, { select: 'all' }).subscribe((selection) => {
                 this.Selection = selection;

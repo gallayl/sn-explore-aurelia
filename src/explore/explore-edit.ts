@@ -16,7 +16,7 @@ export class ExploreEdit {
     isContentLoading: boolean = false;
 
     @bindable
-    actionName: ActionName = 'view';
+    actionName: ActionName = 'edit';
 
     @bindable
     canEdit: boolean = false;
@@ -44,7 +44,6 @@ export class ExploreEdit {
 
     SelectionChanged() {
         this.isContentLoading = true;
-        this.actionName = 'view';
 
         this.Selection.HasPermission(['Save']).subscribe(p => {
             this.canEdit = p

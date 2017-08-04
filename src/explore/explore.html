@@ -14,6 +14,7 @@
                 <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
             </md-sidenav>
 
+            
 
             <div class="content-wrapper col xl10 l8 m8 s12">
                 <div class='card'>
@@ -21,20 +22,25 @@
                         <span class='card-title'>
                             <breadcrumbs selection.two-way="Selection" path-change.call="changePath(path)"></breadcrumbs>
                         </span>
-                        <content-list scope.bind="Selection" get-items.call="GetSelectedChildren(scope, query)" ></content-list>
+                        <content-list scope.bind="Selection" 
+                                    get-items.call="GetSelectedChildren(scope, query)"
+                                    on-activate.call="EditItem(content)"></content-list>
                     </div>
                 </div>
             </div>
 
-            <!-- OLD VIEW yeee  -->
-            <!-- <div class="content-wrapper col xl10 l8 m8 s12">
-                <explore-edit selection.bind="Selection" ></explore-edit>
+
+            <div md-modal md-modal.ref="editModal">
+                <div class='modal-content'>
+                    <h4>${EditedContent.DisplayName || EditedContent.Name}</h4>
+                    <content-view content.bind='EditedContent' action-name='edit'></content-view>
+                </div>
+                <div class="modal-footer">
+                    <a click.delegate="EditedContent.Save()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Save</a>
+                    <a md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Close</a>
+                </div>
+                <!-- <explore-edit selection.bind="EditedContent" action-name='edit'></explore-edit> -->
             </div>
-
-            <md-card class="col xl10 l8 m8 s6" if.bind="!Selection" md-title="Dashboard">
-                <p></p>
-            </md-card> -->
-
 
         </div>
         <add-content view-model.ref="addContentComponent" parent.bind="Selection"></add-content>

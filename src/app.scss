@@ -27,3 +27,7 @@ section.au-enter-active {
 section.au-leave-active {
   animation: slideLeftOut 0.3s ease-out;
 }
+
+[md-tabs] .waves-effect {
+  position: static;
+}
