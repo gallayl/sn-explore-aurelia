@@ -31,11 +31,17 @@ export async function configure(aurelia: Aurelia) {
   // Anyone wanting to use HTMLImports to load views, will need to install the following plugin.
   // aurelia.use.plugin(PLATFORM.moduleName('aurelia-html-import-template-loader'));
 
-  aurelia.container.registerSingleton(Repository.BaseRepository, () => new Repository.SnRepository(
-    {
-      JwtTokenPersist: 'expiration',
-      RepositoryUrl: 'https://sn-local'
-    }));
+  aurelia.container.registerSingleton(Repository.BaseRepository, () => {
+    const repo = new Repository.SnRepository(
+      {
+        JwtTokenPersist: 'expiration',
+        RepositoryUrl: 'https://sn-local'
+      });
+      repo.GetCurrentUser().subscribe(u=>{
+        console.log('User changed', u.Domain, u.LoginName)
+      })
+    return repo;
+  });
 
   await waitForMaterialize();
 

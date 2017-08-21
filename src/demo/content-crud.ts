@@ -15,21 +15,22 @@ export class ContentCrud {
     constructor() {
         this.repo = new Mocks.MockRepository();
         this.contents = [
-            new ContentTypes.Task({
+            this.repo.HandleLoadedContent({
                 // DueDate: new Date(),
                 StartDate: "2017-06-30T09:12:00.000Z",
-                Name: 'Demo Task'
-            } as any, this.repo),
-            new ContentTypes.Email({
+                Name: 'Demo Task',
+                Type: 'Task'
+            } as any),
+            this.repo.HandleLoadedContent({
                 Name: 'Demo E-Mail'
-            }, this.repo),
-            new ContentTypes.User({
+            } as any),
+            this.repo.HandleLoadedContent({
                 Name: 'Demo User',
                 LoginName: '',
                 Email: '',
                 FullName: '',
                 Password: ''
-            }, this.repo)
+            } as any)
         ];
         // this.content = this.contents[0];
     }
