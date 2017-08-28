@@ -1,29 +1,29 @@
 $nav-primary-color: #333;
 
-.navbar{
+// .navbar{
     
-    & nav.primary, & .nav-wrapper{
-        background: transparent;
-    }
+//     & nav.primary, & .nav-wrapper{
+//         background: transparent;
+//     }
     
-    .nav-wrapper{
+//     .nav-wrapper{
 
-        .brand-logo{
-            display: inline-flex !important;
-            color: $nav-primary-color;
-            display: inline-block;
-            padding: 5px 25px;
-            height: 100%;
+//         .brand-logo{
+//             display: inline-flex !important;
+//             color: $nav-primary-color;
+//             display: inline-block;
+//             padding: 5px 25px;
+//             height: 100%;
 
-            span {
-                padding: 0 10px;
-                display: inline-block;
-                line-height: 170%;
-            }
-        }
+//             span {
+//                 padding: 0 10px;
+//                 display: inline-block;
+//                 line-height: 170%;
+//             }
+//         }
 
-        a.nav-item {
-            color: $nav-primary-color;
-        }
-    }
-}
+//         a.nav-item {
+//             color: $nav-primary-color;
+//         }
+//     }
+// }

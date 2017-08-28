@@ -2,7 +2,6 @@ import { autoinject } from 'aurelia-framework';
 import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
 import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
-import { MaterializeFormValidationRenderer } from 'aurelia-materialize-bridge';
 
 
 @autoinject
@@ -28,7 +27,8 @@ export class Login {
     ) {
         this.repositoryUrl = this.snService.Config.RepositoryUrl;
         this.controller = controllerFactory.createForCurrentScope();
-        this.controller.addRenderer(new MaterializeFormValidationRenderer())
+        // ToDo
+        // this.controller.addRenderer(new MterializeFormValidationRenderer())
     }
 
     public rules = ValidationRules

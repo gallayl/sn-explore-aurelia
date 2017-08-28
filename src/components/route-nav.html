@@ -1,8 +1,17 @@
 <template bindable="router">
-  <require from="nav-bar.scss"></require>
-    <ul class="hide-on-med-and-down right">
+
+    <a repeat.for="row of router.navigation" 
+      href.bind="row.href"
+      class="material-icons mdc-toolbar__icon"
+      aria-label.bind="row.title"
+      alt.bind="row.title"
+      title.bind="row.title"
+      class="${row.isActive ? 'active' : ''}"
+      css="${row.settings.show ? '' : 'display: none;'}"
+      > ${row.settings.icon || 'apps'} </a>
+    <!-- <ul class="hide-on-med-and-down right">
         <li md-waves repeat.for="row of router.navigation" class="${row.isActive ? 'active' : ''}" css="${row.settings.show ? '' : 'display: none;'}">
           <a class="nav-item" data-toggle="collapse" data-target="#skeleton-navigation-navbar-collapse.in" href.bind="row.href">${row.title}</a>
         </li>
-    </ul>
+    </ul> -->
 </template>

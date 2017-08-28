@@ -10,9 +10,9 @@
             
             <i md-waves class="explore-mobile-nav material-icons left hide-on-med-and-up" 
                 md-sidenav-collapse="ref.bind: sideNav;">menu</i>
-            <md-sidenav view-model.ref="sideNav">
+            <!-- <md-sidenav view-model.ref="sideNav">
                 <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
-            </md-sidenav>
+            </md-sidenav> -->
 
             
 
@@ -30,7 +30,7 @@
             </div>
 
 
-            <div md-modal md-modal.ref="editModal">
+            <div md-modal>
                 <div class='modal-content'>
                     <h4>${EditedContent.DisplayName || EditedContent.Name}</h4>
                     <content-view content.bind='EditedContent' action-name='edit'></content-view>

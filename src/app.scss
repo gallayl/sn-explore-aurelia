@@ -1,5 +1,7 @@
-nav-bar .primary{
-    background-color: rgba(255,255,255, .6) !important;
+.mdc-toolbar__row:first-child::after {
+  background-image: url("../static/header.png");
+  background-size: cover;
+  background-position: center;
 }
 
 @keyframes slideLeftIn {

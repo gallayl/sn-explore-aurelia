@@ -21,7 +21,6 @@
     "API"
   ],
   "scripts": {
-    "prestart": "rimraf node_modules/materialize-css/node_modules/jquery",
     "start": "nps",
     "build": "nps build development",
     "test": "nps test",
@@ -133,7 +132,7 @@
     "moment-timezone": "^0.5.13",
     "quill": "^1.2.6",
     "rimraf": "^2.6.1",
-    "sn-controls-aurelia": "^1.0.0-beta.1"
+    "sn-controls-aurelia": "^1.0.0-dev.mdc.1"
   },
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"

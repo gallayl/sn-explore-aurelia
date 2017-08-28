@@ -1,6 +1,5 @@
 import { customElement, bindable } from "aurelia-framework";
 import { Content } from "sn-client-js";
-import { MdModal } from "aurelia-materialize-bridge/dist/aurelia-materialize-bridge";
 import { Schemas, ContentTypes, Repository } from "sn-client-js";
 
 @customElement('add-content')
@@ -38,10 +37,12 @@ export class AddContent {
         console.log("Schema changed, create new Content...");
     }
 
-    addContentModal: MdModal;
+    // addContentModal: MdModal;
+    // Todo
 
     open: () => void = () => {
-        this.addContentModal.open();
+        // ToDo
+        // this.addContentModal.open();
         this.SelectedSchema = null;
         this.isLoading = true;
         this.errorMessage = null;
@@ -64,11 +65,11 @@ export class AddContent {
 
     create(){
         this.NewContent.Save().subscribe(c=>{
-            this.addContentModal.close();
+            // this.addContentModal.close();
         });
     }
 
     cancel(){
-        this.addContentModal.close();
+        // this.addContentModal.close();
     }
 }

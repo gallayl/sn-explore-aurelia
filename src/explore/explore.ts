@@ -2,7 +2,6 @@ import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-fra
 import { Repository, Content, ODataApi, ContentTypes, ActionName, Query } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
-import { MdModal } from 'aurelia-materialize-bridge'
 import { AddContent } from "explore/add-content";
 import { Subscription } from "@reactivex/rxjs";
 
@@ -66,12 +65,12 @@ export class Index {
         })
     }
 
-    editModal: MdModal;
     EditedContent: Content;
     async EditItem(content: Content){
         this.EditedContent = content;
         this.EditedContent.Reload('edit').subscribe(c=>{
-            this.editModal.open();
+            // ToDo
+            // this.editModal.open();
         })
     }
 
