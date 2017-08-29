@@ -4,32 +4,37 @@
     <require from='./explore-edit'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
-            <md-card if.bind="!isMobile" class="col xl2 l4 m4 hide-on-small-only">
-                <tree content.bind="RootContent" selection.two-way='Selection'></tree>
-            </md-card>
-            
-            <i md-waves class="explore-mobile-nav material-icons left hide-on-med-and-up" 
-                md-sidenav-collapse="ref.bind: sideNav;">menu</i>
-            <!-- <md-sidenav view-model.ref="sideNav">
-                <tree if.bind="isMobile" content.bind="RootContent" selection.two-way='Selection'></tree>
-            </md-sidenav> -->
-
-            
-
-            <div class="content-wrapper col xl10 l8 m8 s12">
-                <div class='card'>
-                    <div class='card-content'>
-                        <span class='card-title'>
-                            <breadcrumbs selection.two-way="Selection" path-change.call="changePath(path)"></breadcrumbs>
-                        </span>
-                        <content-list scope.bind="Selection" 
-                                    get-items.call="GetSelectedChildren(scope, query)"
-                                    on-activate.call="EditItem(content)"></content-list>
-                    </div>
+            <nav class="mdc-permanent-drawer" if.bind="IsDrawerOpened">
+                <div class="mdc-permanent-drawer__toolbar-spacer">
+                    <span class="mdc-typography--headline">Explore</span>
                 </div>
-            </div>
+                <div class="mdc-permanent-drawer__content">
+                    <tree content.bind="RootContent" selection.two-way='Selection'></tree>
+                </div>
+            </nav>
 
+            <main style="width: 100%;">
+                <header class="mdc-toolbar">
+                    <div class="mdc-toolbar__row">
+                        <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                            <a click.delegate="toggleExploreDrawer()" class="material-icons mdc-toolbar__icon--menu">menu</a>
+                            <a click.delegate="setViewType('List')" class="material-icons mdc-toolbar__icon--menu">list</a>
+                            <a click.delegate="setViewType('Details')" class="material-icons mdc-toolbar__icon--menu">view_module</a>
+                        </section>
+                        <section style="margin-right: 1rem;">
+                            <breadcrumbs selection.two-way="Selection" path-change.call="changePath(path)" class="mdc-typography--button"></breadcrumbs>
+                        </section>
+                    </div>
+                </header>
 
+                <div class="content-wrapper col xl10 l8 m8 s12">
+                    <content-list scope.bind="Selection" 
+                            get-items.call="GetSelectedChildren(scope, query)" 
+                            on-activate.call="Select(content)" 
+                            view-type.bind="ViewType"></content-list>
+                </div>
+            </main>
+<!-- 
             <div md-modal>
                 <div class='modal-content'>
                     <h4>${EditedContent.DisplayName || EditedContent.Name}</h4>
@@ -39,11 +44,13 @@
                     <a click.delegate="EditedContent.Save()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Save</a>
                     <a md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Close</a>
                 </div>
-                <!-- <explore-edit selection.bind="EditedContent" action-name='edit'></explore-edit> -->
+                <explore-edit selection.bind="EditedContent" action-name='edit'></explore-edit>
             </div>
 
         </div>
         <add-content view-model.ref="addContentComponent" parent.bind="Selection"></add-content>
+ -->
+
         <compose view="./explore-fab.html"></compose>
 
     </section>

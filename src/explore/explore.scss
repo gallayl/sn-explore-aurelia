@@ -1,5 +1,7 @@
 .explore-wrapper{
 
+    display: flex;
+
     .loader-wrapper{
         &.transparent{
             opacity: 0;
@@ -9,13 +11,10 @@
             transition-delay: .3s;
             opacity: 1;
         }
-
         transition: opacity ease-in-out .3s;
     }
 
-    .explore-mobile-nav{
-        position: absolute;
-        top: -1.6em;
-        left: 0.5em;
+    .content-wrapper{
+        padding: .5em;
     }
 }

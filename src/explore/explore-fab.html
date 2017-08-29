@@ -1,23 +1,9 @@
 <template>
-    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-        <a 
-           md-button="floating: true; large: true;" 
-           md-tooltip="position: left; text: create content;"
-           md-waves="color: light; circle: true;"
-           click.delegate="addContent()">
 
-                <i class="large material-icons">add</i>
-        </a>
-        <ul>
-            <li>
-                <a md-button="floating: true;"
-                   md-tooltip="position: left; text: upload file;"
-                   md-waves="color: light; circle: true;"
-                   class="blue">
-                    
-                    <i class="material-icons">file_upload</i>
-                </a>
-            </li>
-        </ul>
-    </div>
+    <button class="mdc-fab material-icons mdc-button--primary" aria-label="AddContent" click.delegate="addContent()" style="position: fixed; bottom: 2rem; right: 2rem;">
+        <span class="mdc-fab__icon">
+            add
+        </span>
+      </button>
+
 </template>

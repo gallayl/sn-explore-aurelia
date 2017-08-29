@@ -5,6 +5,8 @@ import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
 import { Subscription } from "@reactivex/rxjs";
 
+import { CollectionView } from 'sn-controls-aurelia';
+
 @autoinject
 export class Index {
 
@@ -27,6 +29,27 @@ export class Index {
     
     Subscriptions: Subscription[] = [];
 
+
+    @bindable
+    ViewType: CollectionView = 'List';
+
+    @bindable
+    IsDrawerOpened: boolean;
+
+    Select(content:Content){
+        if (this.Selection.Id === content.Id){
+            this.snService.Load(content.ParentId).subscribe(p=>{
+                this.Selection = p;
+            })
+        } else {
+            this.Selection = content;
+        }
+    }
+
+    setViewType(newType: CollectionView){
+        this.ViewType = newType;
+    }
+
     clearSubscriptions() {
         this.Subscriptions.forEach(subscription => {
             subscription.unsubscribe();
@@ -36,6 +59,15 @@ export class Index {
 
     GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
         return new Promise( (resolve, reject) => scope.Children({select: 'all', query: q && q.toString()}).subscribe(resolve, reject));
+    }
+
+    toggleExploreDrawer(){
+        // this.MdcTreeDrawer.open = !this.MdcTreeDrawer.open;
+        this.IsDrawerOpened = !this.IsDrawerOpened;
+    }
+
+
+    attached(){
     }
 
     detached() {
