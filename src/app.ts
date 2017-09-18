@@ -20,6 +20,21 @@ export class App {
   @bindable
   toolbarRef: HTMLElement;
 
+
+  public darkthemeChanged(newValue: boolean){
+    localStorage.setItem('sn-dark-theme', newValue ? 'true' : 'false')
+    this.updateTheme();
+  }
+
+  public updateTheme(){
+    document.documentElement.className = this.darktheme ? "mdc-theme--dark" : "";
+    document.documentElement.style.setProperty('--mdc-theme-primary', this.darktheme ? '#004D6E' : '#0393D0');
+    document.documentElement.style.setProperty('--mdc-theme-secondary', this.darktheme ? '#165C39' : '#2CB471');
+  }
+
+  @bindable
+  public darktheme: boolean = localStorage.getItem('sn-dark-theme') === 'true';
+
   configureRouter(config: RouterConfiguration, router: Router) {
     config.title = 'sensenet explore';
     config.addAuthorizeStep(SnClientAuthorizeStep);
@@ -36,6 +51,8 @@ export class App {
   }
 
   attached() {
+    this.updateTheme();
+   
     this.snService.Authentication.State.subscribe(state => {
       this.router.routes.filter(route => route.settings.roles.indexOf(ROLE_LOGGED_IN) > -1)
         .forEach(route => {

@@ -1,40 +1,65 @@
-
-body{
-  margin: 0;
+body {
+    margin: 0;
 }
 
-.mdc-toolbar__row:first-child::after {
-  background-image: url("../static/header.png");
-  background-size: cover;
-  background-position: center;
+html.mdc-theme--dark {
+    background: var(--mdc-permanent-drawer-dark-theme-bg-color);
+
+    .mdc-toolbar__row {
+        &::after {
+            filter: brightness(0.5);
+        }
+    }
+
+    .mdc-fab__icon{
+      color: white;
+    }
+}
+
+.mdc-toolbar__row:first-child {
+    &::after {
+        background-image: url("../static/header.png");
+        background-size: cover;
+        background-position: center;
+    }
+
+    .mdc-switch {
+        margin: 1.25em;
+    }
 }
 
 @keyframes slideLeftIn {
-  0% {
-    transform: translate(100%, 0);
-  }
-  100% {
-    transform: translate(0, 0);
-  }
+    0% {
+        transform: translate(100%, 0);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 }
+
 @keyframes slideLeftOut {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(-100%, 0);
-  }
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(-100%, 0);
+    }
 }
+
 section.au-enter {
-  transform: translate(100%, 0);
+    transform: translate(100%, 0);
 }
+
 section.au-enter-active {
-  animation: slideLeftIn 0.3s ease-out;
+    animation: slideLeftIn 0.3s ease-out;
 }
+
 section.au-leave-active {
-  animation: slideLeftOut 0.3s ease-out;
+    animation: slideLeftOut 0.3s ease-out;
 }
 
 [md-tabs] .waves-effect {
-  position: static;
+    position: static;
 }
