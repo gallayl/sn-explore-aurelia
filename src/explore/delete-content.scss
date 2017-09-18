@@ -1,17 +1,6 @@
 .delete-modal-wrapper {
-    .modal-content {
-        md-collection {
-            md-collection-item {
-                icon.left {
-                    margin-right: 1em;
-                }
-            }
-        }
-    }
-
-    .modal-footer {
-        a.modal-action.permanently {
-            color: #a00;
-        }
+    .permanently-checkbox{
+        flex-grow: 1;
+        
     }
 }

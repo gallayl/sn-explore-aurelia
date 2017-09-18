@@ -1,38 +1,23 @@
 <template>
-    <require from="./explore-edit.scss"></require>
-    <require from='./delete-content'></require>
-    
-    <md-card if.bind="Selection" class="explore-edit-wrapper" md-title.bind="Schema.DisplayName">
-        <div class="loader-wrapper ${isContentLoading? 'visible' : 'transparent'}">
-            <md-progress></md-progress>
-        </div>
-
-        <div class="content-wrapper">
-            <div class="content-view">
-                <content-view content.bind='Selection' action-name.bind='actionName'></content-view>
-            </div>
-        </div>
-        <div class="toolbar">
-            <a if.bind="showEdit" md-button="flat:true" click.delegate="edit()">
-                <i class="material-icons left">edit</i> Edit
-            </a>
-
-            <a if.bind="showDelete" md-button="flat:true" click.delegate="delete()">
-                <i class="material-icons left">delete</i> Delete
-            </a>
-
-            <div class="edit-controls" if.bind="actionName == 'edit'">
-                <a md-button="flat:true" click.delegate="save()">
-                    <i class="material-icons left">save</i> Save
-                </a>
-                <a md-button="flat:true" click.delegate="cancel()">
-                    <i class="material-icons left">clear</i> Cancel
-                </a>
-
-            </div>
-        </div>
-    </md-card>
-    <delete-content view-model.ref="deleteContentDialog"></delete-content>
-
-
+    <aside ref="editContentDialog"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-labelledby="my-mdc-dialog-label"
+    aria-describedby="my-mdc-dialog-description">
+    <div class="mdc-dialog__surface">
+      <header class="mdc-dialog__header">
+        <h2 class="mdc-dialog__header__title">
+            ${EditedContent.DisplayName || EditedContent.Name}
+        </h2>
+      </header>
+      <section class="mdc-dialog__body">
+        <content-view content.bind='EditedContent' action-name='edit'></content-view>
+    </section>
+      <footer class="mdc-dialog__footer">
+        <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
+        <button click.delegate="EditedContent.Save()" type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Save</button>
+      </footer>
+    </div>
+    <div class="mdc-dialog__backdrop"></div>
+  </aside>
 </template>

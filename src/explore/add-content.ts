@@ -1,6 +1,7 @@
 import { customElement, bindable } from "aurelia-framework";
 import { Content } from "sn-client-js";
 import { Schemas, ContentTypes, Repository } from "sn-client-js";
+import { MDCDialog } from '@material/dialog';
 
 @customElement('add-content')
 export class AddContent {
@@ -13,8 +14,16 @@ export class AddContent {
     @bindable
     parent: Content;
 
+    createContentDialog: HTMLElement;
+
+    createContentMDCDialog: MDCDialog;
+
     constructor(private snService: Repository.BaseRepository) {
     }
+
+    attached() {
+        this.createContentMDCDialog = new MDCDialog(this.createContentDialog);
+    }    
 
     parentChanged() {
         this.AvailableSchemas = [];
@@ -37,12 +46,10 @@ export class AddContent {
         console.log("Schema changed, create new Content...");
     }
 
-    // addContentModal: MdModal;
-    // Todo
 
     open: () => void = () => {
         // ToDo
-        // this.addContentModal.open();
+        this.createContentMDCDialog.show();
         this.SelectedSchema = null;
         this.isLoading = true;
         this.errorMessage = null;
@@ -55,7 +62,6 @@ export class AddContent {
             this.AvailableSchemas = cts.map(ct => {
                 return ContentTypes[ct.Name] && Content.GetSchema(ContentTypes[ct.Name]);
             }).filter(ct => ct != null);
-            console.log(this.AvailableSchemas);
         }, (err) => {
             this.isLoading = false;
             this.errorMessage = "There was an error loading the allowed content types." + err
@@ -70,6 +76,6 @@ export class AddContent {
     }
 
     cancel(){
-        // this.addContentModal.close();
+        this.createContentMDCDialog.close();
     }
 }

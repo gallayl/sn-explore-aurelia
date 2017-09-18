@@ -34,11 +34,9 @@ export async function configure(aurelia: Aurelia) {
     const repo = new Repository.SnRepository(
       {
         JwtTokenPersist: 'expiration',
-        RepositoryUrl: 'https://sn-local'
+        RepositoryUrl: 'https://sn-local',
       });
-      repo.GetCurrentUser().subscribe(u=>{
-        console.log('User changed', u.Domain, u.LoginName)
-      })
+
     return repo;
   });
 

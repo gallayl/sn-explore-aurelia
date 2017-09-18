@@ -1,7 +1,7 @@
 <template>
     <require from='./explore.scss'></require>
     <require from='./add-content'></require>
-    <require from='./explore-edit'></require>
+    <require from='./delete-content'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
             <nav class="mdc-permanent-drawer" if.bind="IsDrawerOpened">
@@ -9,49 +9,40 @@
                     <span class="mdc-typography--headline">Explore</span>
                 </div>
                 <div class="mdc-permanent-drawer__content">
-                    <tree content.bind="RootContent" selection.two-way='Selection'></tree>
+                    <tree content.bind="RootContent" selection.two-way='Scope'></tree>
                 </div>
             </nav>
 
             <main style="width: 100%;">
                 <header class="mdc-toolbar">
                     <div class="mdc-toolbar__row">
-                        <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+                        <section class="mdc-toolbar__section mdc-toolbar__section--align-start" style="padding-left: 1em;">
+                            <breadcrumbs selection.two-way="Scope" path-change.call="changePath(path)" class="mdc-typography--button"></breadcrumbs>
+                        </section>                        
+
+                        <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
                             <a click.delegate="toggleExploreDrawer()" class="material-icons mdc-toolbar__icon--menu">menu</a>
                             <a click.delegate="setViewType('List')" class="material-icons mdc-toolbar__icon--menu">list</a>
                             <a click.delegate="setViewType('Details')" class="material-icons mdc-toolbar__icon--menu">view_module</a>
-                        </section>
-                        <section style="margin-right: 1rem;">
-                            <breadcrumbs selection.two-way="Selection" path-change.call="changePath(path)" class="mdc-typography--button"></breadcrumbs>
                         </section>
                     </div>
                 </header>
 
                 <div class="content-wrapper col xl10 l8 m8 s12">
-                    <content-list scope.bind="Selection" 
+                    <content-list scope.bind="Scope" 
                             get-items.call="GetSelectedChildren(scope, query)" 
                             on-activate.call="Select(content)" 
-                            view-type.bind="ViewType"></content-list>
+                            view-type.bind="ViewType"
+                            actions.bind="exploreActions"></content-list>
                 </div>
             </main>
-<!-- 
-            <div md-modal>
-                <div class='modal-content'>
-                    <h4>${EditedContent.DisplayName || EditedContent.Name}</h4>
-                    <content-view content.bind='EditedContent' action-name='edit'></content-view>
-                </div>
-                <div class="modal-footer">
-                    <a click.delegate="EditedContent.Save()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Save</a>
-                    <a md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">Close</a>
-                </div>
-                <explore-edit selection.bind="EditedContent" action-name='edit'></explore-edit>
-            </div>
 
-        </div>
-        <add-content view-model.ref="addContentComponent" parent.bind="Selection"></add-content>
- -->
+        <add-content view-model.ref="addContentComponent" parent.bind="Scope"></add-content>
+        <delete-content view-model.ref="deleteContentComponent" content.bind="contentToDelete"></delete-content>
 
         <compose view="./explore-fab.html"></compose>
+        <compose view="./explore-edit.html"></compose>
+        
 
     </section>
 </template>

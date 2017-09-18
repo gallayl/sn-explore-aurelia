@@ -1,12 +1,18 @@
 .add-content-wrapper {
-    .available-type-list {
-        .available-type-item {
-            cursor: pointer;
-
-            i {
-                display: inline-block;
-                vertical-align: middle;
-            }
+    .mdc-dialog__header {
+        icon {
+            margin-right: 1em;
         }
+    }
+
+    .mdc-dialog__body--scrollable{
+        content-list{
+            
+        }
+    }
+    
+    .mdc-dialog__body--scrollable{
+        max-height: 450px;
+        overflow: auto;
     }
 }

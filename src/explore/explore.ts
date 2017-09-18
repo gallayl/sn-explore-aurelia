@@ -4,8 +4,9 @@ import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
 import { Subscription } from "@reactivex/rxjs";
-
+import { MDCDialog } from '@material/dialog';
 import { CollectionView } from 'sn-controls-aurelia';
+import { DeleteContent } from "explore/delete-content";
 
 @autoinject
 export class Index {
@@ -14,7 +15,7 @@ export class Index {
     public RootContent: Content;
 
     @bindable
-    Selection: Content;
+    Scope: Content;
 
     @bindable
     AllowedChildTypes: { new(...args): Content }[] = [];
@@ -26,7 +27,9 @@ export class Index {
     isMobile: boolean = false;
 
     addContentComponent: AddContent;
-    
+
+    deleteContentComponent: DeleteContent;
+
     Subscriptions: Subscription[] = [];
 
 
@@ -34,19 +37,23 @@ export class Index {
     ViewType: CollectionView = 'List';
 
     @bindable
-    IsDrawerOpened: boolean;
+    IsDrawerOpened: boolean = true;
 
-    Select(content:Content){
-        if (this.Selection.Id === content.Id){
-            this.snService.Load(content.ParentId).subscribe(p=>{
-                this.Selection = p;
+    editContentDialog: HTMLElement;
+    editMdcDialog: MDCDialog;
+    
+
+    Select(content: Content) {
+        if (this.Scope.Id === content.Id) {
+            this.snService.Load(content.ParentId).subscribe(p => {
+                this.Scope = p;
             })
         } else {
-            this.Selection = content;
+            this.Scope = content;
         }
     }
 
-    setViewType(newType: CollectionView){
+    setViewType(newType: CollectionView) {
         this.ViewType = newType;
     }
 
@@ -58,16 +65,16 @@ export class Index {
     }
 
     GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
-        return new Promise( (resolve, reject) => scope.Children({select: 'all', query: q && q.toString()}).subscribe(resolve, reject));
+        return new Promise((resolve, reject) => scope.Children({ select: 'all', query: q && q.toString() }).subscribe(resolve, reject));
     }
 
-    toggleExploreDrawer(){
-        // this.MdcTreeDrawer.open = !this.MdcTreeDrawer.open;
+    toggleExploreDrawer() {
         this.IsDrawerOpened = !this.IsDrawerOpened;
     }
 
 
-    attached(){
+    attached() {
+        this.editMdcDialog = new MDCDialog(this.editContentDialog);
     }
 
     detached() {
@@ -88,27 +95,41 @@ export class Index {
         });
     }
 
-    SelectionChanged(){
+    ScopeChanged() {
         this.clearSubscriptions();
-        
-        this.router.navigateToRoute('explore', { path: this.Selection.Path }, { replace: true });
-        this.Selection.GetRepository().Events.OnContentMoved.subscribe(m=>{
+
+        this.router.navigateToRoute('explore', { path: this.Scope.Path }, { replace: true });
+        this.Scope.GetRepository().Events.OnContentMoved.subscribe(m => {
             this.router.navigateToRoute('explore', { path: m.Content.Path }, { replace: true });
         })
     }
 
     EditedContent: Content;
-    async EditItem(content: Content){
+    async EditItem(content: Content) {
         this.EditedContent = content;
-        this.EditedContent.Reload('edit').subscribe(c=>{
-            // ToDo
-            // this.editModal.open();
+        this.EditedContent.Reload('edit').subscribe(c => {
+            this.editMdcDialog.show();
         })
     }
 
-    changePath(path: string){
+    exploreActions: {name: string, action: (c:Content)=>void}[] = [
+        {
+            name: 'Edit',
+            action: (c) => {
+                this.EditItem(c);
+            }
+        },
+        {
+            name: "Delete",
+            action: (c) => {
+                this.deleteContentComponent.open([c]);
+            }
+        }
+    ]
+
+    changePath(path: string) {
         this.snService.Load(path, { select: 'all' }).subscribe((selection) => {
-                this.Selection = selection;
+            this.Scope = selection;
         });
     }
 

@@ -1,54 +1,57 @@
 <template>
     <require from="./add-content.scss"></require>
-    <div md-modal="starting-top: '1%'; ending-top: '90%'; opacity: 0.7;">
-        <div class="modal-content add-content-wrapper">
-            <h4>Create Content</h4>
 
-            <md-progress if.bind="isLoading"></md-progress>
+    <aside ref="createContentDialog" class="mdc-dialog add-content-wrapper" role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description">
+        <div class="mdc-dialog__surface">
+            <header class="mdc-dialog__header">
+                <icon content.bind="SelectedSchema"></icon>
+   
+                <h2 class="mdc-dialog__header__title">
+                    Create new ${ SelectedSchema && SelectedSchema.DisplayName || 'Content' }
+                </h2>
+            </header>
+            <section class="mdc-dialog__body--scrollable">
+                <md-progress if.bind="isLoading"></md-progress>
 
-            <div if.bind="!isLoading">
+                <div if.bind="!isLoading">
 
-                <div if.bind="errorMessage && errorMessage.length" class="load-error">
-                    ${errorMessage}
-                </div>
-
-                <div if.bind="!errorMessage">
-
-                    <div if.bind="!SelectedSchema">
-                        <h4>Select a Content Type</h4>
-                        <md-collection class="available-type-list">
-                            <md-collection-item repeat.for="schema of AvailableSchemas" class="available-type-item" click.delegate="selectSchema(schema)">
-                                <icon icon-name.bind="schema.Icon"></icon>
-                                <span class="accent-text">${schema.DisplayName}</span>
-                            </md-collection-item>
-                        </md-collection>
+                    <div if.bind="errorMessage && errorMessage.length" class="load-error">
+                        ${errorMessage}
                     </div>
 
-                    <div if.bind="SelectedSchema">
-                        <h4>Create new ${SelectedSchema.DisplayName}</h4>
-                        <content-view content.bind="NewContent" action-name="new"></content-view>
-                    </div>                    
+                    <div if.bind="!errorMessage">
 
+                        <div if.bind="!SelectedSchema">
+                            <content-list 
+                                items.bind="AvailableSchemas"
+                                enable-selection.bind="false"
+                                on-activate.call="selectSchema(content)"
+                                show-scope.bind="false"
+                                view-type="List"></content-list>
+                        </div>
+
+                        <div if.bind="SelectedSchema">
+                            <content-view content.bind="NewContent" action-name="new"></content-view>
+                        </div>
+                    </div>
                 </div>
+            </section>
+            <footer class="mdc-dialog__footer">
 
-            </div>
+                <button if.bind="SelectedSchema" click.delegate="SelectedSchema = null" type="button" class="mdc-button mdc-dialog__footer__button">
+                    Back
+                </button>
+                
+                <button if.bind="SelectedSchema" click.delegate="create()" type="button" class="mdc-button mdc-dialog__footer__button">
+                    Create
+                </button>
 
-
+                <button click.delegate="cancel()" type="button" class="mdc-button mdc-dialog__footer__button">
+                    Cancel
+                </button>
+    
+            </footer>
         </div>
-        <div class="modal-footer">
-            <a if.bind="SelectedSchema" click.delegate="SelectedSchema = null" md-button="flat: true;" class="left">
-                <i class="material-icons left">keyboard_backspace</i>
-                Back
-            </a>
-            <a if.bind="SelectedSchema" click.delegate="create()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">
-                <i class="material-icons left">add</i>
-                Create
-            </a>
-            <a click.delegate="cancel()" md-button="flat: true;" md-waves="color: accent;" class="modal-action modal-close">
-                <i class="material-icons left">clear</i>
-                Cancel
-            </a>
-        </div>
-    </div>
-    </div>
+        <div class="mdc-dialog__backdrop"></div>
+    </aside>
 </template>
