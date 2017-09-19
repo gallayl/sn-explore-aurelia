@@ -104,10 +104,11 @@ export class Index {
         })
     }
 
+    @bindable
     EditedContent: Content;
-    async EditItem(content: Content) {
+    EditItem(content: Content) {
         this.EditedContent = content;
-        this.EditedContent.Reload('edit').subscribe(c => {
+        content.Reload('edit').subscribe(c => {
             this.editMdcDialog.show();
         })
     }
