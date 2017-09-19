@@ -63,3 +63,19 @@ section.au-leave-active {
 [md-tabs] .waves-effect {
     position: static;
 }
+
+
+
+/*
+TEMPFIX Select on Dialogs
+Related issue: Wrong position of opened Select inside Dialog component
+https://github.com/material-components/material-components-web/issues/719
+*/
+
+.mdc-select__menu{
+    left: 0px !important;
+    top: 0px !important;
+    position: inherit !important;
+    max-height: max-content !important;
+    overflow: auto !important;
+}

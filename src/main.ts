@@ -3,8 +3,8 @@
 import '../static/styles.css';
 import 'font-awesome/css/font-awesome.css';
 
-import 'sn-controls-aurelia';
-import 'aurelia-validation';
+// import 'sn-controls-aurelia';
+// import 'aurelia-validation';
 
 import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';

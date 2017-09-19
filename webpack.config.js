@@ -2,7 +2,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const { AureliaPlugin } = require('aurelia-webpack-plugin');
+const { AureliaPlugin, ModuleDependenciesPlugin } = require('aurelia-webpack-plugin');
 const { optimize: { CommonsChunkPlugin }, ProvidePlugin } = require('webpack')
 const { TsConfigPathsPlugin, CheckerPlugin } = require('awesome-typescript-loader');
 
@@ -93,6 +93,13 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   },
   plugins: [
     new AureliaPlugin(),
+    new ModuleDependenciesPlugin({
+      "sn-controls-aurelia": [
+        './attributes/ContentDragCustomAttribute',
+        './attributes/ContentDropCustomAttribute',
+        './attributes/SettingsValidationCustomAttribute'
+      ]
+    }),
     new ProvidePlugin({
       'Promise': 'bluebird'
     }),
