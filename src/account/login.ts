@@ -2,7 +2,7 @@ import { autoinject } from 'aurelia-framework';
 import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
 import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
-
+import { MDCTextfield } from '@material/textfield';
 
 @autoinject
 export class Login {
@@ -71,4 +71,12 @@ export class Login {
                 this.isLoginInProgress = false;
             });
     }
+
+    attached(){
+        const textfields = document.querySelectorAll('.login-wrapper .mdc-textfield');
+        [].forEach.call(textfields, textfield => {
+            new MDCTextfield(textfield)
+        });
+    }
+
 }

@@ -1,35 +1,28 @@
 <template>
     <require from="./login.scss"></require>
     <section class="au-animate login-wrapper">
-        <md-card 
-        md-title.bind="heading" 
-        
-        md-horizontal="true"
-        md-image="http://aurelia-ui-toolkits.github.io/demo-materialize/images/card-sample-1.jpg">
-            <form role="form" submit.delegate="Login()">
-                <input 
-                    md-label="Repository URL" 
-                    value.bind="repositoryUrl" 
-                    md-readonly="true" ></md-input>
 
-                <input 
-                    md-label="Username" 
-                    required="true" 
-                    value.bind="userName & validate:rules" 
-                    md-disabled.bind="isLoginInProgress" 
-                    md-validate="true"></md-input>
-
-                <input 
-                    md-type="password" 
-                    required="true" 
-                    md-label="Password" 
-                    value.bind="password & validate:rules" 
-                    md-disabled.bind="isLoginInProgress"></md-input>
-
-                <div class="login-error"  css="${error && error.length ? 'opacity: 1;' : 'opacity: 0;' }">${error}</div>            
-                <md-progress if.bind="isLoginInProgress"></md-progress>
-                <button md-button type="submit">Log in</button>
-            </form>
-        </md-card>            
+        <div class="mdc-card">
+            <section class="mdc-card__primary">
+                <h1 class="mdc-card__title mdc-card__title--large">${heading}</h1>
+            </section>
+            <section class="mdc-card__supporting-text">
+                <div class="mdc-form-field">
+                    <label class="mdc-textfield">
+                        <input type="text" class="mdc-textfield__input" value.bind="userName & validate:rules" md-disabled.bind="isLoginInProgress">
+                        <span class="mdc-textfield__label">Username</span>
+                    </label>
+                </div>
+                <div class="mdc-form-field">
+                    <label class="mdc-textfield">
+                        <input type="password" class="mdc-textfield__input" value.bind="password & validate:rules" md-disabled.bind="isLoginInProgress">
+                        <span class="mdc-textfield__label">Password</span>
+                    </label>
+                </div>
+            </section>
+            <section class="mdc-card__actions">
+                <button click.delegate="Login()" class="mdc-button mdc-button--compact mdc-card__action">Log in</button>
+            </section>
+        </div>
     </section>
 </template>
