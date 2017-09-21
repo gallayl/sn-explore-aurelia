@@ -8,7 +8,7 @@ export class ContentLogger {
 
     constructor(private repo: Repository.BaseRepository) {
         this.repo.Events.OnContentLoaded.subscribe(p => {
-            console.log('OnContentLoaded', p);
+            // console.log('OnContentLoaded', p);
         });
 
         this.repo.Events.OnContentCreated.subscribe(mod => {

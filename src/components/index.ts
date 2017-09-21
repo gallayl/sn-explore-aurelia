@@ -4,6 +4,7 @@ require('./route-nav.html')
 
 export function configure(config: FrameworkConfiguration) {
     config.globalResources([
-        PLATFORM.moduleName('./route-nav.html')
+        PLATFORM.moduleName('./route-nav.html'),
+        PLATFORM.moduleName('./snackbar')
     ]);
 }
