@@ -34,7 +34,11 @@ export class Index {
 
 
     @bindable
-    ViewType: CollectionView = 'List';
+    ViewType: CollectionView = localStorage.getItem('sn-explore-viewtype') || 'List';
+
+    ViewTypeChanged(){
+        localStorage.setItem('sn-explore-viewtype', this.ViewType);
+    }
 
     @bindable
     IsDrawerOpened: boolean = true;
@@ -111,6 +115,12 @@ export class Index {
         content.Reload('edit').subscribe(c => {
             this.editMdcDialog.show();
         })
+    }
+
+    async SaveEditedContent(){
+        this.EditedContent.Save().subscribe(()=>{
+            this.editMdcDialog.close();
+        });
     }
 
     exploreActions: {name: string, action: (c:Content)=>void}[] = [

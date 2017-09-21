@@ -71,7 +71,7 @@ export class AddContent {
 
     create(){
         this.NewContent.Save().subscribe(c=>{
-            // this.addContentModal.close();
+            this.createContentMDCDialog.close();
         });
     }
 

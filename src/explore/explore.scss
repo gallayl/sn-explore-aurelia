@@ -17,4 +17,14 @@
     .content-wrapper{
         padding: .5em;
     }
+
+    .edit-content-dialog{
+        .mdc-dialog__surface{
+            max-width: 75%;
+            .mdc-dialog__body--scrollable{
+                max-height: 800px;
+                overflow: auto;
+            }
+        }
+    }
 }

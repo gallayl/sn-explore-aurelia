@@ -31,10 +31,7 @@ export class DeleteContent{
 
     async delete(){
 
-        //ToDo: Batch action
-
-        await Promise.all(this.contents.map(c=>c.Delete(this.permanently).toPromise()));
-
         this.deleteContentMDCDialog.close();
+        await Promise.all(this.contents.map(c=>c.Delete(this.permanently).toPromise()));
     }
 }
