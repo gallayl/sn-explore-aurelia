@@ -21,6 +21,7 @@
     .edit-content-dialog{
         .mdc-dialog__surface{
             max-width: 75%;
+            max-height: 90%;
             .mdc-dialog__body--scrollable{
                 max-height: 800px;
                 overflow: auto;

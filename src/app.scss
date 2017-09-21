@@ -79,3 +79,11 @@ https://github.com/material-components/material-components-web/issues/719
     max-height: max-content !important;
     overflow: auto !important;
 }
+
+/*
+FIX - Dialog vs mdc-toolbar
+*/
+
+.mdc-toolbar.mdc-toolbar--fixed.mdc-toolbar--waterfall.mdc-toolbar--flexible.mdc-toolbar--flexible-default-behavior.au-target.mdc-toolbar--flexible-space-maximized{
+    z-index: -1
+}
