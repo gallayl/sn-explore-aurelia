@@ -19,19 +19,21 @@ export class ContentCrud {
                 // DueDate: new Date(),
                 StartDate: "2017-06-30T09:12:00.000Z",
                 Name: 'Demo Task',
-                Type: 'Task'
+                Type: 'Task',
+                Path: 'example/demo'
             } as any),
             this.repo.HandleLoadedContent({
-                Name: 'Demo E-Mail'
+                Name: 'Demo E-Mail',
+                Path: 'example/demo'
             } as any),
             this.repo.HandleLoadedContent({
                 Name: 'Demo User',
                 LoginName: '',
                 Email: '',
                 FullName: '',
-                Password: ''
+                Password: '',
+                Path: 'example/demo'
             } as any)
         ];
-        // this.content = this.contents[0];
     }
 }
