@@ -22,6 +22,17 @@ export class Snackbar {
 
     @bindable DialogHtml: string;
 
+    private tryGetErrorResponseMessage(error: any){
+        var result = null;
+        try {
+            result = error.xhr.response.error.message.value
+        } catch (error) {
+            // ignore
+        }
+
+        return result;
+    }
+
     constructor(
         private readonly repository: Repository.BaseRepository,
         private readonly router: Router
@@ -43,7 +54,7 @@ export class Snackbar {
 
         this.repository.Events.OnContentCreateFailed.subscribe(c => {
             this.MDCSnackBar.show({
-                message: `Failed to create content '${c.Content.DisplayName}'.`,
+                message: this.tryGetErrorResponseMessage(c.Error) || `Failed to create content '${c.Content.DisplayName}'.`,
                 actionText: 'Details',
                 timeout: this.Error_Timeout,               
                 actionHandler: () => {
@@ -67,7 +78,7 @@ export class Snackbar {
         });
 
         this.repository.Events.OnContentModificationFailed.subscribe(c=>{
-            const summary = `Failed to modify '${c.Content.DisplayName}'`          
+            const summary = this.tryGetErrorResponseMessage(c.Error) || `Failed to modify '${c.Content.DisplayName}'`          
             this.MDCSnackBar.show({
                 message: summary,
                 actionText: 'Details',
@@ -102,7 +113,7 @@ export class Snackbar {
         })
 
         this.repository.Events.OnContentDeleteFailed.subscribe(c=>{
-            const summary = `Failed to  ${c.Permanently ? 'delete' : 'move to trash'} '${c.Content.DisplayName}'`          
+            const summary = this.tryGetErrorResponseMessage(c.Error) || `Failed to  ${c.Permanently ? 'delete' : 'move to trash'} '${c.Content.DisplayName}'`          
             this.MDCSnackBar.show({
                 message: summary,
                 actionText: 'Details',
@@ -137,9 +148,10 @@ export class Snackbar {
         })
 
         this.repository.Events.OnContentMoveFailed.subscribe(c=>{
-            const summary = `Failed to move '${c.Content.DisplayName}' from '${c.From}' to '${c.To}'`
+            const summary = this.tryGetErrorResponseMessage(c.Error) || `Failed to move '${c.Content.DisplayName}' from '${c.From}' to '${c.To}'`
             this.MDCSnackBar.show({
                 message: summary,
+                multiline: true,
                 actionText: 'Details',
                 timeout: this.Error_Timeout,                
                 actionHandler: () => {
