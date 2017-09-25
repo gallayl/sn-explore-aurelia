@@ -14,26 +14,21 @@ export class ContentCrud {
 
     constructor() {
         this.repo = new Mocks.MockRepository();
-        this.contents = [
-            this.repo.HandleLoadedContent({
-                // DueDate: new Date(),
-                StartDate: "2017-06-30T09:12:00.000Z",
-                Name: 'Demo Task',
-                Type: 'Task',
-                Path: 'example/demo'
-            } as any),
-            this.repo.HandleLoadedContent({
-                Name: 'Demo E-Mail',
-                Path: 'example/demo'
-            } as any),
-            this.repo.HandleLoadedContent({
-                Name: 'Demo User',
-                LoginName: '',
-                Email: '',
-                FullName: '',
-                Password: '',
-                Path: 'example/demo'
-            } as any)
-        ];
+        const createdContents = [];
+        for (const contentType in ContentTypes){
+            try {
+                const content = this.repo.HandleLoadedContent({
+                    Id: Math.random(),
+                    Path: 'example/demo',
+                    Name: `Demo ${contentType}`
+                }, ContentTypes[contentType]);
+
+                createdContents.push(content);
+            } catch (error) {
+                
+            }
+        }
+
+        this.contents = createdContents;
     }
 }
