@@ -55,18 +55,13 @@ export class Login {
         const success = this.snService.Authentication.Login(this.userName, this.password)
             .subscribe(success => {
                 if (success) {
-
-                    // this.snService.Load(3534, {}, null, ContentTypes.PortalRoot).subscribe(root=>{
-                    //     alert(JSON.stringify(root.options));
                         this.router.navigate('/');
                         this.error = '';
-                    // });
                 } else {
                     this.isLoginInProgress = false;
                     this.error = 'Error: failed to log in.'
                 }
             }, err => {
-                // console.error(err);
                 this.error = err;
                 this.isLoginInProgress = false;
             });
@@ -74,7 +69,7 @@ export class Login {
 
     attached(){
         const textfields = document.querySelectorAll('.login-wrapper .mdc-textfield');
-        [].forEach.call(textfields, textfield => {
+        [].forEach.call(textfields, (textfield: any) => {
             new MDCTextfield(textfield)
         });
     }

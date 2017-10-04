@@ -20,7 +20,7 @@ export class ContentCrud {
                 const content = this.repo.HandleLoadedContent({
                     Id: Math.random(),
                     Path: 'example/demo',
-                    Name: `Demo ${contentType}`
+                    Name: `${contentType} example`
                 }, ContentTypes[contentType]);
 
                 createdContents.push(content);
