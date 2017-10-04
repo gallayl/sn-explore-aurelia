@@ -1,5 +1,5 @@
 import { autoinject } from 'aurelia-framework';
-import { Repository } from "sn-client-js";
+import { Repository, Authentication } from "sn-client-js";
 
 @autoinject
 export class ContentLogger {
@@ -7,6 +7,17 @@ export class ContentLogger {
     private readonly toasTimeout: number = 4000;
 
     constructor(private repo: Repository.BaseRepository) {
+
+
+        repo.GetCurrentUser().subscribe(u => {
+            console.log(u.LoginName);
+        });
+
+        repo.Authentication.State.subscribe(s=>{
+            console.log("AuthState:", Authentication.LoginState[s]);
+        })
+
+
         this.repo.Events.OnContentLoaded.subscribe(p => {
             // console.log('OnContentLoaded', p);
         });
