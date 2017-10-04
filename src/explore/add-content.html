@@ -30,7 +30,7 @@
                                 view-type="List"></content-list>
                         </div>
 
-                        <div if.bind="SelectedSchema">
+                        <div if.bind="SelectedSchema && NewContent">
                             <content-view content.bind="NewContent" action-name="new"></content-view>
                         </div>
                     </div>

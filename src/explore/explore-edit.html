@@ -7,7 +7,7 @@
             ${EditedContent.DisplayName || EditedContent.Name}
           </h2>
         </header>
-        <section class="mdc-dialog__body mdc-dialog__body--scrollable">
+        <section class="mdc-dialog__body mdc-dialog__body--scrollable" if.bind="EditedContent">
           <content-view content.bind='EditedContent' action-name='edit'></content-view>
         </section>
         <footer class="mdc-dialog__footer">
