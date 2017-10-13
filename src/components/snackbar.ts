@@ -206,6 +206,7 @@ export class Snackbar {
         this.InfosSubject.debounceTime(this.Debounce_Time).subscribe(s=>{
             this.ActualInfos = [];
             // this.MDCDialog.close();
+            this.MDCSnackBar.getDefaultFoundation().cleanup_();
             this.MDCSnackBar.getDefaultFoundation().destroy();
             this.MDCSnackBar = new MDCSnackbar(this.snackbarElement);
             
