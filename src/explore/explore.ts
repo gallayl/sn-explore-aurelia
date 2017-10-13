@@ -1,5 +1,5 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
-import { Repository, Content, ODataApi, ContentTypes, ActionName, Query } from "sn-client-js";
+import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
@@ -69,7 +69,7 @@ export class Index {
     }
 
     GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
-        return new Promise((resolve, reject) => scope.Children({ select: 'all', query: q && q.toString() }).subscribe(resolve, reject));
+        return new Promise((resolve, reject) => scope.Children({ select: ['Icon'], query: q && q.toString() }).subscribe(resolve, reject));
     }
 
     toggleExploreDrawer() {
@@ -151,5 +151,26 @@ export class Index {
 
     addContent() {
         this.addContentComponent.open();
+    }
+
+
+    ContentDropped(content:Content){
+        content.MoveTo(this.Scope.Path);
+    }
+
+    ContentDroppedOnItem(content: Content, item: Content){
+        content.MoveTo(item.Path);
+    }
+
+
+
+    async FilesDropped(event: DragEvent, files: FileList){
+        await this.Scope.UploadFromDropEvent({
+            ContentType: ContentTypes.File,
+            CreateFolders: true,
+            Event: event,
+            Overwrite: false,
+            PropertyName: 'Binary'
+        });
     }
 }

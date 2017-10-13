@@ -31,7 +31,9 @@
                 <div class="content-wrapper col xl10 l8 m8 s12">
                     <content-list scope.bind="Scope" 
                             get-items.call="GetSelectedChildren(scope, query)" 
-                            on-activate.call="Select(content)" 
+                            on-activate.call="Select(content)"
+                            on-drop-files.call="FilesDropped(event, files)"
+                            on-drop-content.call="ContentDropped(content)"
                             view-type.bind="ViewType"
                             actions.bind="exploreActions"></content-list>
                 </div>
