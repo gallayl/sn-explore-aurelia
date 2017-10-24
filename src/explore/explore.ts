@@ -123,7 +123,7 @@ export class Index {
         });
     }
 
-    exploreActions: {name: string, action: (c:Content)=>void}[] = [
+    exploreActions: {name: string, action: (c:SavedContent)=>void}[] = [
         {
             name: 'Edit',
             action: (c) => {
@@ -180,5 +180,24 @@ export class Index {
             Overwrite: false,
             PropertyName: 'Binary'
         });
+    }
+
+    @bindable
+    SelectedContent: SavedContent[];
+
+    @bindable
+    ShowDeleteSelected: boolean = false;
+
+    DeleteSelected(){
+        this.deleteContentComponent.open(this.SelectedContent);
+    }
+
+    SelectedContentChanged(){
+        if (this.SelectedContent.length){
+            this.ShowDeleteSelected = true;
+        } else {
+            this.ShowDeleteSelected = false;
+        }
+        console.log(this.SelectedContent);
     }
 }

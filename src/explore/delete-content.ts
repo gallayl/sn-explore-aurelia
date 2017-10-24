@@ -1,11 +1,11 @@
 import { customElement, bindable } from "aurelia-framework";
-import { Content } from "sn-client-js";
+import { Content, SavedContent } from "sn-client-js";
 import { MDCDialog } from '@material/dialog';
 
 @customElement('delete-content')
 export class DeleteContent{
     @bindable
-    contents: Content[];
+    contents: SavedContent[];
 
     @bindable
     permanently: boolean = false;
@@ -18,7 +18,7 @@ export class DeleteContent{
     }
 
 
-    open(contents: Content[]){
+    open(contents: SavedContent[]){
         this.contents = contents;
         this.permanently = false;
         this.deleteContentMDCDialog.show();
@@ -30,8 +30,7 @@ export class DeleteContent{
 
 
     async delete(){
-
         this.deleteContentMDCDialog.close();
-        await Promise.all(this.contents.map(c=>c.Delete(this.permanently).toPromise()));
+        await this.contents[0].GetRepository().DeleteBatch(this.contents, this.permanently).toPromise()
     }
 }
