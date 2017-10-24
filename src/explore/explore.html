@@ -34,7 +34,11 @@
                             on-activate.call="Select(content)"
                             on-drop-files.call="FilesDropped(event, files)"
                             on-drop-content.call="ContentDropped(content)"
+                            on-drop-content-list.call="ContentListDropped(contentList)"
+                            on-drop-content-on-item.call="ContentDroppedOnItem(content, item)"
+                            on-drop-content-list-on-item.call="ContentListDroppedOnItem(contentList, item)"
                             view-type.bind="ViewType"
+                            selection.bind="SelectedContent"
                             actions.bind="exploreActions"></content-list>
                 </div>
             </main>

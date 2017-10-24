@@ -1,6 +1,6 @@
 import { customElement, bindable } from "aurelia-framework";
 import { Content } from "sn-client-js";
-import { Schemas, ContentTypes, Repository } from "sn-client-js";
+import { Schemas, ContentTypes, Repository, ContentInternal } from "sn-client-js";
 import { MDCDialog } from '@material/dialog';
 
 @customElement('add-content')
@@ -40,10 +40,9 @@ export class AddContent {
 
     selectSchema(newSchema: Schemas.Schema<Content>) {
         this.SelectedSchema = newSchema;
-        this.NewContent = Content.Create({
-            Path: this.parent.Path
-        }, this.SelectedSchema.ContentType, this.snService);
-        console.log("Schema changed, create new Content...");
+        this.NewContent = this.snService.CreateContent({
+            Path: this.parent.Path,
+        }, newSchema.ContentType as any);
     }
 
 
@@ -60,7 +59,7 @@ export class AddContent {
         }).subscribe(cts => {
             this.isLoading = false;
             this.AvailableSchemas = cts.map(ct => {
-                return ContentTypes[ct.Name] && Content.GetSchema(ContentTypes[ct.Name]);
+                return ContentTypes[ct.Name] && ContentInternal.GetSchema(ContentTypes[ct.Name]);
             }).filter(ct => ct != null);
         }, (err) => {
             this.isLoading = false;

@@ -1,5 +1,5 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
-import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper } from "sn-client-js";
+import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
@@ -158,15 +158,23 @@ export class Index {
         content.MoveTo(this.Scope.Path);
     }
 
+    ContentListDropped(contentList: SavedContent[]){
+        this.Scope.GetRepository().MoveBatch(contentList, this.Scope.Path);
+    }
+
     ContentDroppedOnItem(content: Content, item: Content){
         content.MoveTo(item.Path);
+    }
+
+    ContentListDroppedOnItem(contentList: SavedContent[], item: Content){
+        this.Scope.GetRepository().MoveBatch(contentList, item.Path)
     }
 
 
 
     async FilesDropped(event: DragEvent, files: FileList){
         await this.Scope.UploadFromDropEvent({
-            ContentType: ContentTypes.File,
+            ContentType: ContentTypes.File as any,
             CreateFolders: true,
             Event: event,
             Overwrite: false,

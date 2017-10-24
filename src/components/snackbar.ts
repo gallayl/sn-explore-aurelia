@@ -130,7 +130,7 @@ export class Snackbar {
                 BulkMessage: `There was an error deleting {0} content`,
                 DialogHtml:`<br /> Content path: <i>${c.Content.Path}</i> </p> 
                 Fields: <br /> 
-                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.Content.options, null, 3)}</textarea>  <br />
+                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.Content.GetFields(), null, 3)}</textarea>  <br />
                 Request <br />
                 <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.Error, null, 3)}</textarea>
                 Response <br />
@@ -159,7 +159,7 @@ export class Snackbar {
                 Request <br />
                 <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.Error, null, 3)}</textarea>
                 Response <br />
-                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.Error.xhr.response, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.Error.xhr && c.Error.xhr.response, null, 3)}</textarea>
                 `
             });
         });   
