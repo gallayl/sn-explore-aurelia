@@ -30,7 +30,7 @@ export class AddContent {
     }
 
     @bindable
-    SelectedSchema: Schemas.Schema<Content>;
+    SelectedSchema: Schemas.Schema;
 
     @bindable
     NewContent: Content;
@@ -38,11 +38,11 @@ export class AddContent {
     @bindable
     AvailableSchemas = []
 
-    selectSchema(newSchema: Schemas.Schema<Content>) {
+    selectSchema(newSchema: Schemas.Schema) {
         this.SelectedSchema = newSchema;
         this.NewContent = this.snService.CreateContent({
             Path: this.parent.Path,
-        }, newSchema.ContentType as any);
+        }, ContentTypes[newSchema.ContentTypeName]);
     }
 
 
@@ -59,7 +59,7 @@ export class AddContent {
         }).subscribe(cts => {
             this.isLoading = false;
             this.AvailableSchemas = cts.map(ct => {
-                return ContentTypes[ct.Name] && ContentInternal.GetSchema(ContentTypes[ct.Name]);
+                return ContentTypes[ct.Name] && this.snService.GetSchema(ContentTypes[ct.Name]);
             }).filter(ct => ct != null);
         }, (err) => {
             this.isLoading = false;
