@@ -3,9 +3,10 @@ import { MDCDialog } from '@material/dialog';
 import { autoinject, bindable } from 'aurelia-framework';
 import { Router } from 'aurelia-router';
 import { Repository } from "sn-client-js";
-import { Subject } from '@reactivex/rxjs';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/debounceTime';
 
-import * as _ from 'lodash';
+import groupBy from 'lodash.groupby';
 
 export enum SnackEventType{
     Created = 'created',
@@ -175,7 +176,7 @@ export class Snackbar {
 
         this.InfosSubject.subscribe(i=>{
             this.ActualInfos.push(i);
-            const grouped = _.groupBy(this.ActualInfos, 'BulkMessage');
+            const grouped = groupBy(this.ActualInfos, 'BulkMessage');
             const msgSegments: string[] = []
             for (const type in grouped){
                 if (grouped[type].length === 1){

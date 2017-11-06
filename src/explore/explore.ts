@@ -3,7 +3,7 @@ import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHe
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
-import { Subscription } from "@reactivex/rxjs";
+import { Subscription } from "rxjs/subscription";
 import { MDCDialog } from '@material/dialog';
 import { CollectionView } from 'sn-controls-aurelia';
 import { DeleteContent } from "explore/delete-content";

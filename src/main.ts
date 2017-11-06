@@ -17,8 +17,7 @@ export async function configure(aurelia: Aurelia) {
     .developmentLogging()
     .feature(PLATFORM.moduleName('components/index'))
     .plugin(PLATFORM.moduleName('aurelia-validation'))
-    .plugin(PLATFORM.moduleName('sn-controls-aurelia'))
-    .plugin(PLATFORM.moduleName('aurelia-resize'));
+    .plugin(PLATFORM.moduleName('sn-controls-aurelia'));
 
   // Uncomment the line below to enable animation.
   aurelia.use.plugin(PLATFORM.moduleName('aurelia-animator-css'));
