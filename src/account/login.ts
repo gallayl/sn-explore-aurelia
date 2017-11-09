@@ -3,6 +3,8 @@ import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
 import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
 import { MDCTextfield } from '@material/textfield';
+import { RxAjaxHttpProvider } from 'sn-client-js/dist/src/HttpProviders';
+import { GoogleAuthenticationService } from 'sn-client-auth-google';
 
 @autoinject
 export class Login {
@@ -72,6 +74,12 @@ export class Login {
         [].forEach.call(textfields, (textfield: any) => {
             new MDCTextfield(textfield)
         });
+    }
+
+    public async googleAuthClick(){
+        this.isLoginInProgress = true;
+        const token = await this.snService.Authentication.GetOauthProvider(GoogleAuthenticationService).GoogleLogin();
+        console.log(token);
     }
 
 }
