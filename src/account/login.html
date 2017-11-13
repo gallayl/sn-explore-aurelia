@@ -1,29 +1,60 @@
 <template>
     <require from="./login.scss"></require>
     <section class="au-animate login-wrapper">
-
         <div class="mdc-card">
             <section class="mdc-card__primary">
                 <h1 class="mdc-card__title mdc-card__title--large">${heading}</h1>
             </section>
             <section class="mdc-card__supporting-text">
-                <div class="mdc-form-field">
-                    <label class="mdc-textfield">
-                        <input type="text" class="mdc-textfield__input" value.bind="userName & validate:rules" md-disabled.bind="isLoginInProgress">
-                        <span class="mdc-textfield__label">Username</span>
-                    </label>
-                </div>
-                <div class="mdc-form-field">
-                    <label class="mdc-textfield">
-                        <input type="password" class="mdc-textfield__input" value.bind="password & validate:rules" md-disabled.bind="isLoginInProgress">
-                        <span class="mdc-textfield__label">Password</span>
-                    </label>
+                <form>
+                    <div class="mdc-form-field">
+                        <label class="mdc-textfield">
+                            <input required type="text" class="mdc-textfield__input" value.bind="userName & validate:rules" disabled.bind="isLoginInProgress">
+                            <span class="mdc-textfield__label">Username</span>
+                        </label>
+                    </div>
+                    <div class="mdc-form-field">
+                        <label class="mdc-textfield">
+                            <input required type="password" class="mdc-textfield__input" value.bind="password & validate:rules" disabled.bind="isLoginInProgress">
+                            <span class="mdc-textfield__label">Password</span>
+                        </label>
+                    </div>
+                    <div class="login-error">
+                        ${error}
+                    </div>
+                    <div class="login-button-wrapper" if.bind="!isLoginInProgress">
+                        <button type="submit" click.delegate="Login()" class="mdc-button mdc-button--compact mdc-card__action">Log in</button>
+                    </div>
+                </form>
+
+            </section>
+            <section class="loader" if.bind="isLoginInProgress">
+                <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+                    <div class="mdc-linear-progress__buffering-dots"></div>
+                    <div class="mdc-linear-progress__buffer"></div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
+                    <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                        <span class="mdc-linear-progress__bar-inner"></span>
+                    </div>
                 </div>
             </section>
-            <section class="mdc-card__actions">
-                <button click.delegate="Login()" class="mdc-button mdc-button--compact mdc-card__action">Log in</button>
-                <button click.delegate="googleAuthClick()" class="mdc-button mdc-button--compact mdc-card__action">Log in with Google</button>
+            <section class="mdc-card__actions right" if.bind="!isLoginInProgress">
+
+                <a target="_blank" href="http://community.sensenet.com/" class="mdc-typography--body1"> Other login options </a>
+
+                <button click.delegate="googleAuthClick()" class="mdc-button mdc-button--compact mdc-card__action social">
+                    <i class="fa fa-2x fa-google-plus-square" aria-hidden="true"></i>
+                </button>
+                <button disabled click.delegate="" class="mdc-button mdc-button--compact mdc-card__action social">
+                    <i class="fa fa-2x fa-windows" aria-hidden="true"></i>
+                </button>
+                <button disabled click.delegate="" class="mdc-button mdc-button--compact mdc-card__action social">
+                    <i class="fa fa-2x fa-facebook-square" aria-hidden="true"></i>
+                </button>
             </section>
         </div>
+
     </section>
 </template>

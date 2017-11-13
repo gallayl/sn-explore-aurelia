@@ -4,11 +4,11 @@ import { Router } from 'aurelia-router';
 import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
 import { MDCTextfield } from '@material/textfield';
 import { RxAjaxHttpProvider } from 'sn-client-js/dist/src/HttpProviders';
-import { GoogleAuthenticationService } from 'sn-client-auth-google';
+import { GoogleOauthProvider } from 'sn-client-auth-google';
 
 @autoinject
 export class Login {
-    private readonly heading = 'Login to sense NET ECM'
+    private readonly heading = 'Login'
     public userName: string = '';
     public password: string = '';
 
@@ -52,13 +52,13 @@ export class Login {
         }
     }
 
-    public async Login() {
+    public async Login($event: Event) {
         this.isLoginInProgress = true;
         const success = this.snService.Authentication.Login(this.userName, this.password)
             .subscribe(success => {
                 if (success) {
-                        this.router.navigate('/');
-                        this.error = '';
+                    this.router.navigate('/');
+                    this.error = '';
                 } else {
                     this.isLoginInProgress = false;
                     this.error = 'Error: failed to log in.'
@@ -69,17 +69,23 @@ export class Login {
             });
     }
 
-    attached(){
+    attached() {
         const textfields = document.querySelectorAll('.login-wrapper .mdc-textfield');
         [].forEach.call(textfields, (textfield: any) => {
             new MDCTextfield(textfield)
         });
     }
 
-    public async googleAuthClick(){
+    public async googleAuthClick() {
         this.isLoginInProgress = true;
-        const token = await this.snService.Authentication.GetOauthProvider(GoogleAuthenticationService).GoogleLogin();
-        console.log(token);
+        try {
+            const token = await this.snService.Authentication.GetOauthProvider(GoogleOauthProvider).Login();
+            this.router.navigate('/');
+        } catch (error) {
+            /** */
+        }
+
+        this.isLoginInProgress = false;
     }
 
 }
