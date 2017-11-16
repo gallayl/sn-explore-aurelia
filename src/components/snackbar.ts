@@ -172,7 +172,6 @@ export class Snackbar {
     attached() {
         this.MDCSnackBar = new MDCSnackbar(this.snackbarElement);
         this.MDCDialog = new MDCDialog(document.querySelector('.snackbar-wrapper .mdc-details-dialog'));
-        this.MDCSnackBar.listen('MDCSnackBar:show', ev=>{console.log('SnackBarShown', ev)})
 
         this.InfosSubject.subscribe(i=>{
             this.ActualInfos.push(i);

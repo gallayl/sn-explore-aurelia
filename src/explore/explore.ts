@@ -198,6 +198,5 @@ export class Index {
         } else {
             this.ShowDeleteSelected = false;
         }
-        console.log(this.SelectedContent);
     }
 }
