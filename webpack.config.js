@@ -63,6 +63,11 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   },
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        enforce: "pre"
+      },
       { 
         test: /\.scss$/,
         use: [ 'css-loader', 'sass-loader' ]
