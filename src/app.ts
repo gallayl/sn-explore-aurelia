@@ -40,11 +40,11 @@ export class App {
     config.addAuthorizeStep(SnClientAuthorizeStep);
     config.fallbackRoute('');
     config.map([
-      { route: ['', 'welcome'], name: 'welcome', moduleId: PLATFORM.moduleName('./welcome'), title: 'Welcome', settings: { show: true, roles: [], icon: 'home' }, nav: true },
-      { route: 'demo', name: 'demo', moduleId: PLATFORM.moduleName('./demo/demo'), title: 'Demos', settings: { show: true, roles: [], icon: 'slideshow' }, nav: true },
-      { route: 'login', name: 'login', moduleId: PLATFORM.moduleName('./account/login'), title: 'Log in', settings: { show: true, roles: [ROLE_VISITOR_ONLY], icon: 'person' }, nav: true },
-      { route: ['explore/*path', 'explore'], href:'#explore', name: 'explore', moduleId: PLATFORM.moduleName('./explore/explore'), title: 'Explore', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'apps' }, nav: true },
-      { route: 'logout', name: 'logout', moduleId: PLATFORM.moduleName('./account/logout'), title: 'Log out', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'exit_to_app' }, nav: true },
+      { route: ['', 'welcome'], name: 'welcome', moduleId: PLATFORM.moduleName('./welcome', 'welcome'), title: 'Welcome', settings: { show: true, roles: [], icon: 'home' }, nav: true },
+      { route: 'demo', name: 'demo', moduleId: PLATFORM.moduleName('./demo/demo', 'demo'), title: 'Demos', settings: { show: true, roles: [], icon: 'slideshow' }, nav: true },
+      { route: 'login', name: 'login', moduleId: PLATFORM.moduleName('./account/login', 'login'), title: 'Log in', settings: { show: true, roles: [ROLE_VISITOR_ONLY], icon: 'person' }, nav: true },
+      { route: ['explore/*path', 'explore'], href:'#explore', name: 'explore', moduleId: PLATFORM.moduleName('./explore/explore', 'explore'), title: 'Explore', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'apps' }, nav: true },
+      { route: 'logout', name: 'logout', moduleId: PLATFORM.moduleName('./account/logout', 'logout'), title: 'Log out', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'exit_to_app' }, nav: true },
     ]);
 
     this.router = router;
