@@ -28,36 +28,37 @@ html.mdc-theme--dark {
     }
 }
 
-@keyframes slideLeftIn {
+
+@keyframes fadeIn {
     0% {
-        transform: translate(100%, 0);
+        opacity: 0;
     }
 
     100% {
-        transform: translate(0, 0);
+        opacity: 100;
     }
 }
 
-@keyframes slideLeftOut {
+@keyframes fadeOut {
     0% {
-        transform: translate(0, 0);
+        opacity: 100;
     }
 
     100% {
-        transform: translate(-100%, 0);
+        opacity: 0;
     }
 }
 
 section.au-enter {
-    transform: translate(100%, 0);
+    opacity: 100;//translate(100%, 0);
 }
 
 section.au-enter-active {
-    animation: slideLeftIn 0.3s ease-out;
+    animation: fadeIn 0.3s cubic-bezier(0.755, 0.050, 0.855, 0.060);;
 }
 
 section.au-leave-active {
-    animation: slideLeftOut 0.3s ease-out;
+    animation: fadeOut 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940);
 }
 
 [md-tabs] .waves-effect {
