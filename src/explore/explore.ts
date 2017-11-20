@@ -1,15 +1,20 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
+import { BindingSignaler } from 'aurelia-templating-resources';
 import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
 import { Subscription } from "rxjs/subscription";
 import { MDCDialog } from '@material/dialog';
+import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { CollectionView } from 'sn-controls-aurelia';
 import { DeleteContent } from "explore/delete-content";
 
 @autoinject
 export class Index {
+    searchBar: HTMLInputElement;
+
+    private readonly queryChanged: string = 'explore-query-changed';
 
     @bindable
     public RootContent: Content;
@@ -69,7 +74,7 @@ export class Index {
     }
 
     GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
-        return new Promise((resolve, reject) => scope.Children({ select: ['Icon'], query: q && q.toString() }).subscribe(resolve, reject));
+        return new Promise((resolve, reject) => scope.Children({ select: ['Icon', 'ParentId', 'Actions'], expand: ['Actions'], query: q && q.toString()}).subscribe(resolve, reject));
     }
 
     toggleExploreDrawer() {
@@ -78,6 +83,7 @@ export class Index {
 
 
     attached() {
+        new MDCTextField(this.searchBar)
         this.editMdcDialog = new MDCDialog(this.editContentDialog);
     }
 
@@ -85,7 +91,10 @@ export class Index {
         this.clearSubscriptions();
     }
 
-    constructor(private snService: Repository.BaseRepository, private router: Router) {
+    constructor(private snService: Repository.BaseRepository,
+                private router: Router,
+                private readonly bindingSignaler: BindingSignaler
+            ) {
     }
 
     activate(params) {
@@ -198,5 +207,19 @@ export class Index {
         } else {
             this.ShowDeleteSelected = false;
         }
+    }
+
+    searchEnabled = false;
+    @bindable
+    queryString = '';
+
+
+    @computedFrom('queryString')
+    public get query():Query{
+        return new Query(q=>q.Term(this.queryString));
+    }
+    
+    toggleSearch(){
+        this.searchEnabled = !this.searchEnabled;
     }
 }
