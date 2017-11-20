@@ -2,7 +2,7 @@ import { autoinject } from 'aurelia-framework';
 import { Repository, ContentTypes } from 'sn-client-js';
 import { Router } from 'aurelia-router';
 import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
-import { MDCTextfield } from '@material/textfield';
+import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { RxAjaxHttpProvider } from 'sn-client-js/dist/src/HttpProviders';
 import { GoogleOauthProvider } from 'sn-client-auth-google';
 
@@ -70,9 +70,9 @@ export class Login {
     }
 
     attached() {
-        const textfields = document.querySelectorAll('.login-wrapper .mdc-textfield');
+        const textfields = document.querySelectorAll('.login-wrapper .mdc-text-field');
         [].forEach.call(textfields, (textfield: any) => {
-            new MDCTextfield(textfield)
+            new MDCTextField(textfield)
         });
     }
 

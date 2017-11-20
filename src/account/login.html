@@ -8,15 +8,16 @@
             <section class="mdc-card__supporting-text">
                 <form>
                     <div class="mdc-form-field">
-                        <label class="mdc-textfield">
-                            <input required type="text" class="mdc-textfield__input" value.bind="userName & validate:rules" disabled.bind="isLoginInProgress">
-                            <span class="mdc-textfield__label">Username</span>
+                        <label class="mdc-text-field">
+                            <input required type="text" class="mdc-text-field__input" value.bind="userName & validate:rules" disabled.bind="isLoginInProgress">
+                            <span class="mdc-text-field__label">Username</span>
+                            <div class="mdc-text-field__bottom-line"></div>
                         </label>
                     </div>
                     <div class="mdc-form-field">
-                        <label class="mdc-textfield">
-                            <input required type="password" class="mdc-textfield__input" value.bind="password & validate:rules" disabled.bind="isLoginInProgress">
-                            <span class="mdc-textfield__label">Password</span>
+                        <label class="mdc-text-field">
+                            <input required type="password" class="mdc-text-field__input" value.bind="password & validate:rules" disabled.bind="isLoginInProgress">
+                            <span class="mdc-text-field__label">Password</span>
                         </label>
                     </div>
                     <div class="login-error">
