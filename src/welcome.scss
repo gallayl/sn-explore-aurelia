@@ -1,8 +1,46 @@
-.welcome-wrapper{
-    display: flex;
-    justify-content: space-between;
+.welcome-wrapper {
+    .mdc-card-media {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 275px;
 
-    .mdc-card{
+        &:hover {
+            section {
+                &:last-child {
+                    padding-bottom: 16px;
+                }
+            }
+        }
 
+        &.login-card-media {
+            background-image: url("../static/sn_pan.jpg");
+        }
+
+        &.components-card-media {
+            background-image: url("../static/wrench.jpg");
+        }
+
+        &.explore-card-media {
+            background-image: url("../static/compass.jpg");
+        }
+
+        &.logout-card-media {
+            background-image: url("../static/exit.jpg");
+        }
+
+        & > section {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0 16px;
+            justify-content: flex-end;
+
+            h1, h2{
+                color: var(--mdc-theme-text-primary-on-primary);
+            }
+
+            &:last-child {
+                transition: all .15s ease-out;
+            }
+        }
     }
 }

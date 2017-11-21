@@ -25,14 +25,11 @@
                             
                             <div class="mdc-form-field searchBar ${searchEnabled ? '' : 'hidden'}" ref="searchBar">
                                 <label class="mdc-text-field">
-                                    <input type="text" class="mdc-text-field__input" value.two-way="queryString & debounce">
+                                    <input ref='searchInput' type="text" class="mdc-text-field__input" value.two-way="queryString & debounce">
                                     <span class="mdc-text-field__label">Search content</span>
                                     <div class="mdc-text-field__bottom-line"></div>
                                 </label>
                             </div>
-
-                            <!-- <input class="searchBar ${searchEnabled ? '' : 'hidden'}" placeholder='Search content' type="text" value.two-way='queryString & debounce'/> -->
-
                             <a if.bind="ShowDeleteSelected" click.delegate="DeleteSelected()" class="material-icons mdc-toolbar__icon--menu">delete</a>
                             <a click.delegate="toggleExploreDrawer()" class="material-icons mdc-toolbar__icon--menu">menu</a>
                             <a click.delegate="setViewType('List')" class="material-icons mdc-toolbar__icon--menu">list</a>

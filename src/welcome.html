@@ -1,6 +1,6 @@
 <template>
   <require from='./welcome.scss'></require>
-  <section class="au-animate mdc-layout-grid">
+  <section class="au-animate mdc-layout-grid welcome-wrapper">
 
     <compose if.bind="isLoggedIn" view="./welcome-registered.html"></compose>
     <compose if.bind="!isLoggedIn" view="./welcome-visitor.html"></compose>

@@ -1,6 +1,6 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
 import { BindingSignaler } from 'aurelia-templating-resources';
-import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent } from "sn-client-js";
+import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent, ContentInternal } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContent } from "explore/add-content";
@@ -73,8 +73,13 @@ export class Index {
         this.Subscriptions = [];
     }
 
-    GetSelectedChildren(scope: Content, q?: Query): Promise<Content[]> {
-        return new Promise((resolve, reject) => scope.Children({ select: ['Icon', 'ParentId', 'Actions'], expand: ['Actions'], query: q && q.toString()}).subscribe(resolve, reject));
+    GetSelectedChildren(scope: SavedContent, q?: Query): Promise<Content[]> {
+        return new Promise((resolve, reject) => scope.Children({ 
+            select: ['Icon', 'ParentId', 'Actions'],
+            expand: ['Actions'],
+            query: q && q.toString(),
+            orderby:['IsFolder desc', 'DisplayName asc']
+        }).subscribe(resolve, reject));
     }
 
     toggleExploreDrawer() {
@@ -214,12 +219,19 @@ export class Index {
     queryString = '';
 
 
-    @computedFrom('queryString')
-    public get query():Query{
-        return new Query(q=>q.Term(this.queryString));
+    @computedFrom('queryString', 'searchEnabled')
+    public get query():Query | undefined{
+        return this.queryString && this.searchEnabled && new Query(q=>
+            q.Equals('_Text', this.queryString + '*')
+        );
     }
     
+    searchInput: HTMLInputElement;
+
     toggleSearch(){
         this.searchEnabled = !this.searchEnabled;
+        if (this.searchEnabled && this.searchInput){
+            this.searchInput.focus();
+        }
     }
 }
