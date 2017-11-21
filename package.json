@@ -135,8 +135,8 @@
     "quill": "^1.3.2",
     "rimraf": "^2.6.2",
     "sn-client-auth-google": "^1.0.0-development.1",
-    "sn-client-js": "^3.0.0-rc.1",
-    "sn-controls-aurelia": "^2.0.0-development.3",
+    "sn-client-js": "^3.0.0-development.7",
+    "sn-controls-aurelia": "^2.0.0-development.5",
     "source-map-loader": "^0.2.3"
   },
   "czConfig": {
