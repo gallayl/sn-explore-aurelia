@@ -9,6 +9,7 @@ import { MDCDialog } from '@material/dialog';
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { CollectionView } from 'sn-controls-aurelia';
 import { DeleteContent } from "explore/delete-content";
+import { ActionModel } from "sn-client-js/dist/src/Repository";
 
 @autoinject
 export class Index {
@@ -78,7 +79,8 @@ export class Index {
             select: ['Icon', 'ParentId', 'Actions'],
             expand: ['Actions'],
             query: q && q.toString(),
-            orderby:['IsFolder desc', 'DisplayName asc']
+            orderby:['IsFolder desc', 'DisplayName asc'],
+            scenario: 'ListItem'
         }).subscribe(resolve, reject));
     }
 
@@ -232,6 +234,18 @@ export class Index {
         this.searchEnabled = !this.searchEnabled;
         if (this.searchEnabled && this.searchInput){
             this.searchInput.focus();
+        }
+    }
+
+    onAction(content: Content, action: ActionModel){
+        switch (action.Name){
+            case 'Delete':
+                this.deleteContentComponent.open([content]);
+                break;
+            default:
+                console.log(content, action);
+                break;
+
         }
     }
 }

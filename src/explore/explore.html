@@ -50,7 +50,7 @@
                             view-type.bind="ViewType"
                             query.bind='query'
                             selection.two-way="SelectedContent"
-                            actions.bind="exploreActions"></content-list>
+                            on-action.call="onAction(content,action)"></content-list>
                 </div>
             </main>
 

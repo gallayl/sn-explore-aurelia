@@ -38,6 +38,10 @@
                 color: var(--mdc-theme-text-primary-on-primary);
             }
 
+            a, button {
+                color: var(--mdc-theme-text-primary-on-primary);                
+            }
+
             &:last-child {
                 transition: all .15s ease-out;
             }
