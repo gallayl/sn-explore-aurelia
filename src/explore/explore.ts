@@ -54,12 +54,16 @@ export class Index {
     
 
     Select(content: Content) {
-        if (this.Scope.Id === content.Id) {
-            this.snService.Load(content.ParentId).subscribe(p => {
-                this.Scope = p;
-            })
+        if (content.IsFolder){
+            if (this.Scope.Id === content.Id) {
+                this.snService.Load(content.ParentId).subscribe(p => {
+                    this.Scope = p;
+                })
+            } else {
+                this.Scope = content;
+            }
         } else {
-            this.Scope = content;
+            this.EditItem(content);
         }
     }
 
@@ -76,7 +80,7 @@ export class Index {
 
     GetSelectedChildren(scope: SavedContent, q?: Query): Promise<Content[]> {
         return new Promise((resolve, reject) => scope.Children({ 
-            select: ['Icon', 'ParentId', 'Actions'],
+            select: ['Icon', 'ParentId', 'Actions', 'IsFolder'],
             expand: ['Actions'],
             query: q && q.toString(),
             orderby:['IsFolder desc', 'DisplayName asc'],
