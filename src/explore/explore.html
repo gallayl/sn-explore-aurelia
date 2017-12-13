@@ -1,6 +1,5 @@
 <template>
     <require from='./explore.scss'></require>
-    <require from='./add-content'></require>
     <require from='./delete-content'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
@@ -54,7 +53,7 @@
                 </div>
             </main>
 
-        <add-content view-model.ref="addContentComponent" parent.bind="Scope"></add-content>
+        <add-content-dialog view-model.ref="addContentComponent" parent.bind="Scope"></add-content-dialog>
         <delete-content view-model.ref="deleteContentComponent" content.bind="contentToDelete"></delete-content>
 
         <compose view="./explore-fab.html"></compose>

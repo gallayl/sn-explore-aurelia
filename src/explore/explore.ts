@@ -3,7 +3,7 @@ import { BindingSignaler } from 'aurelia-templating-resources';
 import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent, ContentInternal } from "sn-client-js";
 import { SelectionService, Tree } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
-import { AddContent } from "explore/add-content";
+import { EditContentDialog } from "sn-controls-aurelia";
 import { Subscription } from "rxjs/subscription";
 import { MDCDialog } from '@material/dialog';
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
@@ -32,7 +32,7 @@ export class Index {
     @bindable
     isMobile: boolean = false;
 
-    addContentComponent: AddContent;
+    addContentComponent: EditContentDialog;
 
     deleteContentComponent: DeleteContent;
 

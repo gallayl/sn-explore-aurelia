@@ -8,16 +8,6 @@ export class ContentLogger {
 
     constructor(private repo: Repository.BaseRepository) {
 
-
-        repo.GetCurrentUser().subscribe(u => {
-            console.log('User changed: ', u);
-        });
-
-        repo.Authentication.State.subscribe(s=>{
-            console.log("AuthState:", Authentication.LoginState[s]);
-        })
-
-
         this.repo.Events.OnContentLoaded.subscribe(p => {
             // console.log('OnContentLoaded', p);
         });

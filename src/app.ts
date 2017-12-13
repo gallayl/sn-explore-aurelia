@@ -8,25 +8,23 @@ import { Repository, Authentication } from 'sn-client-js';
 import { ContentLogger } from "utils";
 
 import { MDCToolbar } from "@material/toolbar";
-
-const ROLE_LOGGED_IN: string = 'ROLE_LOGGED_IN';
-const ROLE_VISITOR_ONLY: string = 'ROLE_VISITOR_ONLY';
+import { Role, RoleHelper } from 'utils/role-helper';
 
 @autoinject
 export class App {
 
   router: Router;
-  constructor(private snService: Repository.BaseRepository, private logger: ContentLogger) { }
+  constructor(private snService: Repository.BaseRepository, private logger: ContentLogger, private roleHelper: RoleHelper) { }
   @bindable
   toolbarRef: HTMLElement;
 
 
-  public darkthemeChanged(newValue: boolean){
+  public darkthemeChanged(newValue: boolean) {
     localStorage.setItem('sn-dark-theme', newValue ? 'true' : 'false')
     this.updateTheme();
   }
 
-  public updateTheme(){
+  public updateTheme() {
     document.documentElement.className = this.darktheme ? "mdc-theme--dark" : "";
     document.documentElement.style.setProperty('--mdc-theme-primary', this.darktheme ? '#004D6E' : '#0393D0');
     document.documentElement.style.setProperty('--mdc-theme-secondary', this.darktheme ? '#165C39' : '#2CB471');
@@ -42,9 +40,9 @@ export class App {
     config.map([
       { route: ['', 'welcome'], name: 'welcome', moduleId: PLATFORM.moduleName('./welcome', 'welcome'), title: 'Welcome', settings: { show: true, roles: [], icon: 'home' }, nav: true },
       { route: 'demo', name: 'demo', moduleId: PLATFORM.moduleName('./demo/demo', 'demo'), title: 'Demos', settings: { show: true, roles: [], icon: 'slideshow' }, nav: true },
-      { route: 'login', name: 'login', moduleId: PLATFORM.moduleName('./account/login', 'login'), title: 'Log in', settings: { show: true, roles: [ROLE_VISITOR_ONLY], icon: 'person' }, nav: true },
-      { route: ['explore/*path', 'explore'], href:'#explore', name: 'explore', moduleId: PLATFORM.moduleName('./explore/explore', 'explore'), title: 'Explore', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'apps' }, nav: true },
-      { route: 'logout', name: 'logout', moduleId: PLATFORM.moduleName('./account/logout', 'logout'), title: 'Log out', settings: { show: true, roles: [ROLE_LOGGED_IN], icon: 'exit_to_app' }, nav: true },
+      { route: 'login', name: 'login', moduleId: PLATFORM.moduleName('./account/login', 'login'), title: 'Log in', settings: { show: true, roles: [Role.IsVisitor], icon: 'person' }, nav: true },
+      { route: ['explore/*path', 'explore'], href: '#explore', name: 'explore', moduleId: PLATFORM.moduleName('./explore/explore', 'explore'), title: 'Explore', settings: { show: true, roles: [Role.IsExploreUser], icon: 'apps' }, nav: true },
+      { route: 'logout', name: 'logout', moduleId: PLATFORM.moduleName('./account/logout', 'logout'), title: 'Log out', settings: { show: true, roles: [Role.IsLoggedIn], icon: 'exit_to_app' }, nav: true },
     ]);
 
     this.router = router;
@@ -52,16 +50,17 @@ export class App {
 
   attached() {
     this.updateTheme();
-   
-    this.snService.Authentication.State.subscribe(state => {
-      this.router.routes.filter(route => route.settings.roles.indexOf(ROLE_LOGGED_IN) > -1)
-        .forEach(route => {
-          route.settings.show = state === Authentication.LoginState.Authenticated;
-        });
-      this.router.routes.filter(route => route.settings.roles.indexOf(ROLE_VISITOR_ONLY) > -1)
-        .forEach(route => {
-          route.settings.show = state === Authentication.LoginState.Unauthenticated;
-        })
+    
+    this.roleHelper.OnRolesChanged.subscribe(()=>{
+      this.router.routes.forEach(async route=>{
+        route.settings.show = true;
+        for (const role of route.settings.roles) {
+          const isInRole = await this.roleHelper.IsInRole(role);
+          if (!isInRole){
+            route.settings.show = false;
+          }
+        }
+      })
     })
     const toolbar: MDCToolbar = new MDCToolbar(this.toolbarRef);
   }
@@ -70,26 +69,20 @@ export class App {
 @autoinject
 class SnClientAuthorizeStep implements PipelineStep {
 
-  constructor(private snService: Repository.BaseRepository) { }
+  constructor(private snService: Repository.BaseRepository, private roleHelper: RoleHelper) { }
 
   public async run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     const instructions = navigationInstruction.getAllInstructions();
-    return new Promise((resolve, reject) => {
-      this.snService.Authentication.State
-      .skipWhile(state => state === Authentication.LoginState.Pending)
-      .subscribe(authenticationState => {
-        if (instructions.some(i => i.config.settings.roles.indexOf(ROLE_LOGGED_IN) !== -1)) {
-          if (authenticationState !== Authentication.LoginState.Authenticated) {
-            return resolve(next.cancel(new Redirect('login')));
+    return new Promise(async (resolve, reject) => {
+      for (const role in Role) {
+        if (instructions.some(i => i.config.settings.roles.indexOf(role) !== -1)) {
+          const isInRole = await this.roleHelper.IsInRole(role as Role)
+          if (!isInRole) {
+            return resolve(next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : '')));
           }
         }
-        if (instructions.some(i => i.config.settings.roles.indexOf(ROLE_VISITOR_ONLY) !== -1)) {
-          if (authenticationState !== Authentication.LoginState.Unauthenticated) {
-            return resolve(next.cancel(new Redirect('')));
-          }
-        }
-        return resolve(next());
-      });
+      }
+      return resolve(next());
     })
   }
 }
