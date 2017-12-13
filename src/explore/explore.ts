@@ -1,14 +1,12 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
 import { BindingSignaler } from 'aurelia-templating-resources';
 import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent, ContentInternal } from "sn-client-js";
-import { SelectionService, Tree } from "sn-controls-aurelia";
+import { SelectionService, Tree, CollectionView, DeleteContent } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
-import { EditContentDialog } from "sn-controls-aurelia";
+import { AddContentDialog, EditContentDialog } from "sn-controls-aurelia";
 import { Subscription } from "rxjs/subscription";
 import { MDCDialog } from '@material/dialog';
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
-import { CollectionView } from 'sn-controls-aurelia';
-import { DeleteContent } from "explore/delete-content";
 import { ActionModel } from "sn-client-js/dist/src/Repository";
 
 @autoinject
@@ -32,7 +30,8 @@ export class Index {
     @bindable
     isMobile: boolean = false;
 
-    addContentComponent: EditContentDialog;
+    addContentDialog: AddContentDialog;
+    editContentDialog: EditContentDialog;
 
     deleteContentComponent: DeleteContent;
 
@@ -47,11 +46,7 @@ export class Index {
     }
 
     @bindable
-    IsDrawerOpened: boolean = true;
-
-    editContentDialog: HTMLElement;
-    editMdcDialog: MDCDialog;
-    
+    IsDrawerOpened: boolean = true;    
 
     Select(content: Content) {
         if (content.IsFolder){
@@ -95,7 +90,6 @@ export class Index {
 
     attached() {
         new MDCTextField(this.searchBar)
-        this.editMdcDialog = new MDCDialog(this.editContentDialog);
     }
 
     detached() {
@@ -131,16 +125,7 @@ export class Index {
     @bindable
     EditedContent: Content;
     EditItem(content: Content) {
-        this.EditedContent = content;
-        content.Reload('edit').subscribe(c => {
-            this.editMdcDialog.show();
-        })
-    }
-
-    async SaveEditedContent(){
-        this.EditedContent.Save().subscribe(()=>{
-            this.editMdcDialog.close();
-        });
+        this.editContentDialog.open(content);
     }
 
     exploreActions: {name: string, action: (c:SavedContent)=>void}[] = [
@@ -170,7 +155,7 @@ export class Index {
     }
 
     addContent() {
-        this.addContentComponent.open();
+        this.addContentDialog.open();
     }
 
 

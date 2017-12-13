@@ -1,6 +1,5 @@
 <template>
     <require from='./explore.scss'></require>
-    <require from='./delete-content'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
             <nav class="mdc-permanent-drawer" if.bind="IsDrawerOpened">
@@ -53,12 +52,11 @@
                 </div>
             </main>
 
-        <add-content-dialog view-model.ref="addContentComponent" parent.bind="Scope"></add-content-dialog>
-        <delete-content view-model.ref="deleteContentComponent" content.bind="contentToDelete"></delete-content>
+        <add-content-dialog view-model.ref="addContentDialog" parent.bind="Scope"></add-content-dialog>
+        <edit-content-dialog view-model.ref="editContentDialog"></edit-content-dialog>
+        <delete-content-dialog view-model.ref="deleteContentComponent"></delete-content-dialog>
 
         <compose view="./explore-fab.html"></compose>
-        <compose view="./explore-edit.html"></compose>
-        
 
     </section>
 </template>
