@@ -132,6 +132,7 @@
     "jquery": "^3.2.1",
     "lodash.groupby": "^4.6.0",
     "moment-timezone": "^0.5.13",
+    "monaco-editor": "^0.10.1",
     "rimraf": "^2.6.2",
     "sn-client-auth-google": "^1.0.0",
     "sn-client-js": "^3.0.1",

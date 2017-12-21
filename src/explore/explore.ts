@@ -1,16 +1,19 @@
 import { autoinject, bindable, computedFrom, bindingBehavior } from "aurelia-framework";
 import { BindingSignaler } from 'aurelia-templating-resources';
 import { Repository, Content, ODataApi, ContentTypes, ActionName, Query, ODataHelper, SavedContent, ContentInternal } from "sn-client-js";
-import { SelectionService, Tree, CollectionView, DeleteContent } from "sn-controls-aurelia";
+import { SelectionService, Tree, CollectionView, DeleteContent, SetPermissionsDialog } from "sn-controls-aurelia";
 import { RouterConfiguration, Router } from "aurelia-router";
 import { AddContentDialog, EditContentDialog } from "sn-controls-aurelia";
 import { Subscription } from "rxjs/subscription";
 import { MDCDialog } from '@material/dialog';
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { ActionModel } from "sn-client-js/dist/src/Repository";
+import { BinaryTextEditor } from "explore/binary-text-editor";
 
 @autoinject
 export class Index {
+    binaryTextEditor: BinaryTextEditor;
+    setPermissionsDialog: SetPermissionsDialog;
     searchBar: HTMLInputElement;
 
     private readonly queryChanged: string = 'explore-query-changed';
@@ -79,7 +82,7 @@ export class Index {
             expand: ['Actions'],
             query: q && q.toString(),
             orderby:['IsFolder desc', 'DisplayName asc'],
-            scenario: 'ListItem'
+            // scenario: 'ListItem'
         }).subscribe(resolve, reject));
     }
 
@@ -127,22 +130,6 @@ export class Index {
     EditItem(content: Content) {
         this.editContentDialog.open(content);
     }
-
-    exploreActions: {name: string, action: (c:SavedContent)=>void}[] = [
-        {
-            name: 'Edit',
-            action: (c) => {
-                this.EditItem(c);
-            }
-        },
-        {
-            name: "Delete",
-            action: (c) => {
-                this.deleteContentComponent.open([c]);
-            }
-        }
-    ]
-
     changePath(path: string) {
         this.snService.Load(path, { select: 'all' }).subscribe((selection) => {
             this.Scope = selection;
@@ -226,10 +213,24 @@ export class Index {
         }
     }
 
+    getActions(content: Content): ActionModel[]{
+        return (content.Actions as ActionModel[]).filter(a => {
+            return ['Delete', 'SetPermissions', 'Edit', 'BinarySpecial'].indexOf(a.Name) > -1;
+        })
+    }
     onAction(content: Content, action: ActionModel){
         switch (action.Name){
             case 'Delete':
                 this.deleteContentComponent.open([content]);
+                break;
+            case 'SetPermissions':
+                this.setPermissionsDialog.open(content);
+                break;
+            case 'Edit':
+                this.EditItem(content);
+                break;
+            case 'BinarySpecial':
+                this.binaryTextEditor.open(content);
                 break;
             default:
                 console.log(content, action);

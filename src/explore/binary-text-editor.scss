@@ -1,0 +1,14 @@
+.edit-binary-wrapper{
+    .mdc-dialog__surface{
+        width: 90%;
+        height: 90%;
+
+        .mdc-dialog__body{
+            height: 100%;
+            overflow: hidden;
+            .monaco-edit-wrapper{
+                height: 100%;
+            }
+        }
+    }
+}

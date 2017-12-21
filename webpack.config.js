@@ -135,8 +135,14 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
       },
     }),
     new CopyWebpackPlugin([
-      { from: 'static/favicon.ico', to: 'favicon.ico' }
+      { from: 'static/favicon.ico', to: 'favicon.ico' },
     ]),
+    new CopyWebpackPlugin([
+      {
+          from: 'node_modules/monaco-editor/min/vs',
+          to: 'vs',
+      }
+  ]),
     ...when(extractCss, new ExtractTextPlugin({
       filename: production ? '[contenthash].css' : '[id].css',
       allChunks: true,

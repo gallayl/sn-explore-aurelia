@@ -1,5 +1,6 @@
 <template>
     <require from='./explore.scss'></require>
+    <require from='./binary-text-editor'></require>
     <section class="au-animate">
         <div class='explore-wrapper row' resizeable resize.trigger="resize($event.detail)">
             <nav class="mdc-permanent-drawer" if.bind="IsDrawerOpened">
@@ -39,6 +40,7 @@
                 <div class="content-wrapper col xl10 l8 m8 s12">
                     <content-list scope.bind="Scope" 
                             get-items.call="GetSelectedChildren(scope, query)" 
+                            get-actions.call="getActions(content)"
                             on-activate.call="Select(content)"
                             on-drop-files.call="FilesDropped(event, files)"
                             on-drop-content.call="ContentDropped(content)"
@@ -55,6 +57,8 @@
         <add-content-dialog view-model.ref="addContentDialog" parent.bind="Scope"></add-content-dialog>
         <edit-content-dialog view-model.ref="editContentDialog"></edit-content-dialog>
         <delete-content-dialog view-model.ref="deleteContentComponent"></delete-content-dialog>
+        <set-permissions-dialog view-model.ref="setPermissionsDialog"></set-permissions-dialog>
+        <binary-text-editor view-model.ref="binaryTextEditor"></set-permissions-dialog>
 
         <compose view="./explore-fab.html"></compose>
 
