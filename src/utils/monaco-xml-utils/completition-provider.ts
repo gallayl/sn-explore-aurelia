@@ -1,10 +1,6 @@
-import * as xmlFormatter from 'xml-formatter';
-import { ContentTypeDefinitionXsd } from '../../utils/xsd-schemas';
-
 export function stringToXml(text) {
     return new DOMParser().parseFromString(text.replace(/xs\:/g, ''), 'text/xml');
 }
-const schemaNode = stringToXml(ContentTypeDefinitionXsd).childNodes[0];
 function getLastOpenedTag(text) {
     // get all tags inside of the content
     const tags = text.match(/<\/*(?=\S*)([a-zA-Z-]+)/g);
@@ -220,10 +216,11 @@ function getAvailableAttribute(elements, usedChildTags) {
     return availableItems;
 }
 
-export function getXmlCompletionProvider(): monaco.languages.CompletionItemProvider {
+export function getXsdCompletionProvider(schemaString: string): monaco.languages.CompletionItemProvider {
     return {
         triggerCharacters: ['<'],
         provideCompletionItems(model, position) {
+            const schemaNode = stringToXml(schemaString).childNodes[0];
             // get editor content before the pointer
             const textUntilPosition = model.getValueInRange({ startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column });
             // get content info - are we inside of the area where we don't want suggestions, what is the content without those areas
@@ -291,24 +288,3 @@ export function getXmlCompletionProvider(): monaco.languages.CompletionItemProvi
 
     };
 }
-
-function getXmlFormattingProvider(): monaco.languages.DocumentFormattingEditProvider {
-    return {
-        provideDocumentFormattingEdits: (model: monaco.editor.IReadOnlyModel, options: monaco.languages.FormattingOptions, token: monaco.CancellationToken) => {
-            const formatted = new DOMParser().parseFromString(model.getValue(), 'text/xml').childNodes[0].outerHTML; // xmlFormatter(model.getValue(monaco.editor.EndOfLinePreference.TextDefined));
-            return [{
-                eol: monaco.editor.EndOfLineSequence.LF,
-                text: formatted,
-                range: model.getFullModelRange()
-            }] as monaco.languages.TextEdit[];
-        }
-    };
-}
-let hasRegistered = false;
-export const registerXsdCompletitionProvider = () => {
-    if (!hasRegistered) {
-        monaco.languages.registerCompletionItemProvider('xml', getXmlCompletionProvider());
-        monaco.languages.registerDocumentFormattingEditProvider('xml', getXmlFormattingProvider());
-        hasRegistered = true;
-    }
-};

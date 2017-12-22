@@ -7,6 +7,7 @@ import { Content } from 'sn-client-js';
 import { ContentTypes } from 'sn-client-js';
 import { BinaryField } from 'sn-client-js/dist/src/BinaryField';
 import { GenericContent } from 'sn-client-js/dist/src/ContentTypes';
+import { SensenetCtdLanguage } from 'utils/monaco-languages/sensenet-ctd';
 import { registerXsdCompletitionProvider } from 'utils/monaco-xml-utils/completition-provider';
 
 @customElement('binary-text-editor')
@@ -73,8 +74,8 @@ export class BinaryTextEditor {
     public explicitSetupForContent(content: Content<GenericContent>): boolean {
         const schemas = content.GetSchemaWithParents().map((s) => s.ContentTypeName);
         if (schemas.indexOf('ContentType') > -1) {
-            monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), 'xml');
-            registerXsdCompletitionProvider(monaco);
+            SensenetCtdLanguage.Register();
+            monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), SensenetCtdLanguage.LanguageId);
             return true;
         }
         if (schemas.indexOf('Settings') > -1) {
