@@ -4,8 +4,8 @@
         height: 90%;
 
         .mdc-dialog__body{
-            height: 100%;
-            overflow: hidden;
+            height: -webkit-fill-available;
+            // overflow: hidden;
             .monaco-edit-wrapper{
                 height: 100%;
             }

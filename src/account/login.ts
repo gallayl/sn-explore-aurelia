@@ -1,31 +1,30 @@
-import { autoinject } from 'aurelia-framework';
-import { Repository, ContentTypes } from 'sn-client-js';
-import { Router } from 'aurelia-router';
-import { ValidationControllerFactory, ValidationRules, ValidationController } from 'aurelia-validation';
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
-import { RxAjaxHttpProvider } from 'sn-client-js/dist/src/HttpProviders';
+import { autoinject } from 'aurelia-framework';
+import { Router } from 'aurelia-router';
+import { ValidationController, ValidationControllerFactory, ValidationRules } from 'aurelia-validation';
 import { GoogleOauthProvider } from 'sn-client-auth-google';
+import { Repository } from 'sn-client-js';
 
 @autoinject
 export class Login {
-    private readonly heading = 'Login'
+    public readonly heading = 'Login';
     public userName: string = '';
     public password: string = '';
 
-    private error: string = '';
+    public error: string = '';
 
-    private canLogin: boolean = false;
+    public canLogin: boolean = false;
 
-    private isLoginInProgress: boolean = false;
+    public isLoginInProgress: boolean = false;
 
-    private readonly repositoryUrl: string;
+    public readonly repositoryUrl: string;
 
     private controller: ValidationController;
 
     constructor(
         private snService: Repository.BaseRepository,
         private router: Router,
-        controllerFactory: ValidationControllerFactory
+        controllerFactory: ValidationControllerFactory,
     ) {
         this.repositoryUrl = this.snService.Config.RepositoryUrl;
         this.controller = controllerFactory.createForCurrentScope();
@@ -41,8 +40,8 @@ export class Login {
         .required()
         .rules;
 
-    async validateModel() {
-        const v = await this.controller.validate()
+    public async validateModel() {
+        const v = await this.controller.validate();
         if (v.valid) {
             this.error = '';
             this.canLogin = true;
@@ -52,27 +51,27 @@ export class Login {
         }
     }
 
-    public async Login($event: Event) {
+    public async Login() {
         this.isLoginInProgress = true;
-        const success = this.snService.Authentication.Login(this.userName, this.password)
-            .subscribe(success => {
+        this.snService.Authentication.Login(this.userName, this.password)
+            .subscribe((success) => {
                 if (success) {
                     this.router.navigate('/');
                     this.error = '';
                 } else {
                     this.isLoginInProgress = false;
-                    this.error = 'Error: failed to log in.'
+                    this.error = 'Error: failed to log in.';
                 }
-            }, err => {
+            }, (err) => {
                 this.error = err;
                 this.isLoginInProgress = false;
             });
     }
 
-    attached() {
+    public attached() {
         const textfields = document.querySelectorAll('.login-wrapper .mdc-text-field');
         [].forEach.call(textfields, (textfield: any) => {
-            new MDCTextField(textfield)
+            const f = new MDCTextField(textfield);
         });
     }
 

@@ -1,51 +1,48 @@
+// tslint:disable-next-line:no-reference
 /// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
 
-import { customElement, bindable, computedFrom } from 'aurelia-framework';
-import { Content } from 'sn-client-js';
-import { Schemas, ContentTypes, Repository } from 'sn-client-js';
+import { bindable, computedFrom, customElement } from 'aurelia-framework';
 import { dialog } from 'material-components-web/dist/material-components-web';
+import { Content } from 'sn-client-js';
+import { ContentTypes } from 'sn-client-js';
 import { BinaryField } from 'sn-client-js/dist/src/BinaryField';
 import { GenericContent } from 'sn-client-js/dist/src/ContentTypes';
-
-
-declare const monaco: any;
-declare const require: any;
+import { registerXsdCompletitionProvider } from 'utils/monaco-xml-utils/completition-provider';
 
 @customElement('binary-text-editor')
 export class BinaryTextEditor {
 
-    editBinaryDialog: HTMLElement;
+    public editBinaryDialog: HTMLElement;
     @bindable
-    monacoEditArea: HTMLElement;
+    public monacoEditArea: HTMLElement;
 
-    monacoEditorInstance: monaco.editor.IStandaloneCodeEditor;
+    public monacoEditorInstance: monaco.editor.IStandaloneCodeEditor;
 
-    editBinaryMDCDialog: dialog.MDCDialog;
+    public editBinaryMDCDialog: dialog.MDCDialog;
 
     @bindable
-    isLoading: boolean = true;
+    public isLoading: boolean = true;
 
-
-    private initMonaco(){
+    private initMonaco() {
         this.monacoEditorInstance = monaco.editor.create(this.monacoEditArea, {
           value: this.binaryData,
           language: 'plaintext',
         });
     }
 
-    attached() {
+    public attached() {
         this.editBinaryMDCDialog = new dialog.MDCDialog(this.editBinaryDialog);
 
-        var onGotAmdLoader = () => {
+        const onGotAmdLoader = () => {
             // Load monaco
-            (<any>window).require(['vs/editor/editor.main'], () => {
+            (window as any).require(['vs/editor/editor.main'], () => {
                 this.initMonaco();
             });
         };
 
         // Load AMD loader if necessary
-        if (!(<any>window).require) {
-            var loaderScript = document.createElement('script');
+        if (!(window as any).require) {
+            const loaderScript = document.createElement('script');
             loaderScript.type = 'text/javascript';
             loaderScript.src = 'vs/loader.js';
             loaderScript.addEventListener('load', onGotAmdLoader);
@@ -68,18 +65,21 @@ export class BinaryTextEditor {
             throw Error(`Field '${this.fieldName}' is not a binary field on content`);
         }
         return this.content[this.fieldName] as BinaryField<Content>;
-    };
+    }
 
     @bindable
     public binaryData: any;
 
-    public tryGetLanguageForContentType(content: Content<GenericContent>){
-        const schemas = content.GetSchemaWithParents().map(s=>s.ContentTypeName);
-        if (schemas.indexOf('ContentType') > -1){
-            return 'xml';
+    public explicitSetupForContent(content: Content<GenericContent>): boolean {
+        const schemas = content.GetSchemaWithParents().map((s) => s.ContentTypeName);
+        if (schemas.indexOf('ContentType') > -1) {
+            monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), 'xml');
+            registerXsdCompletitionProvider(monaco);
+            return true;
         }
-        if (schemas.indexOf('Settings') > -1){
-            return 'json';
+        if (schemas.indexOf('Settings') > -1) {
+            monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), 'json');
+            return true;
         }
 
     }
@@ -93,25 +93,25 @@ export class BinaryTextEditor {
         this.binaryData = await this.content.GetRepository().Ajax(this.field.GetDownloadUrl(), 'GET', String, {}, [], false, 'text').toPromise();
         this.monacoEditorInstance.setValue(this.binaryData);
 
-        const languages: monaco.languages.ILanguageExtensionPoint[] = monaco.languages.getLanguages();
-        const available = [
-            this.tryGetLanguageForContentType(content),
-            ...languages.filter(lang => {
-                return lang.extensions.filter(e => content.Name.endsWith(e)).length;
-            }).map(lang=>lang.id)];
-        monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), available[0] || 'plaintext');
+        if (!this.explicitSetupForContent(content)) {
+            const languages: monaco.languages.ILanguageExtensionPoint[] = monaco.languages.getLanguages();
+            const available = languages.filter((lang) => {
+                    return lang.extensions.filter((e) => content.Name.endsWith(e)).length;
+                }).map((lang) => lang.id);
+            monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), available[0] || 'plaintext');
+        }
+
+        // tslint:disable-next-line:no-string-literal
         this.monacoEditorInstance['_themeService'].setTheme(localStorage.getItem('sn-dark-theme') === 'true' ? 'vs-dark' : 'vs');
         this.isLoading = false;
     }
 
-    cancel(){
+    public cancel() {
         this.editBinaryMDCDialog.close();
     }
 
-    async save(){
+    public async save() {
         await this.field.SaveBinaryText(this.monacoEditorInstance.getValue()).toPromise();
         this.editBinaryMDCDialog.close();
     }
-
-
 }
