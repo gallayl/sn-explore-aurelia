@@ -1,4 +1,4 @@
-export function stringToXml(text) {
+export function stringToXml(text): Document {
     return new DOMParser().parseFromString(text.replace(/xs\:/g, ''), 'text/xml');
 }
 function getLastOpenedTag(text) {
@@ -66,14 +66,14 @@ function shouldSkipLevel(tagName) {
     return tagName === 'complexType' || tagName === 'all' || tagName === 'sequence' || tagName === 'extension';
 }
 
-function findElements(elements, elementName) {
-    for (const i = 0; i < elements.length; i++) {
+function findElements(elements: HTMLCollection, elementName?: string) {
+    for (const element of elements as any as HTMLElement[]) {
         // we are looking for elements, so we don't need to process annotations and attributes
-        if (elements[i].tagName !== 'annotation' && elements[i].tagName !== 'attribute') {
+        if (element.tagName !== 'annotation' && element.tagName !== 'attribute') {
             // if it is one of the nodes that do not have the info we need, skip it
             // and process that node's child items
-            if (shouldSkipLevel(elements[i].tagName)) {
-                const child = findElements(elements[i].children, elementName);
+            if (shouldSkipLevel(element.tagName)) {
+                const child = findElements(element.children, elementName);
                 // if child exists, return it
                 if (child) {
                     return child;
@@ -82,26 +82,25 @@ function findElements(elements, elementName) {
                 // if there is no elementName, return all elements (we'll explain
                 // this bit little later
                 return elements;
-            } else if (getElementAttributes(elements[i]).name === elementName) {
+            } else if (getElementAttributes(element).name === elementName) {
                 // find all the element attributes, and if is't name is the same
                 // as the element we're looking for, return the element.
-                return elements[i];
+                return element;
             }
         }
     }
 }
 
-function findAttributes(elements) {
-    const attrs = [];
-    for (let i = 0; i < elements.length; i++) {
-        // skip level if it is a 'complexType' tag
-        if (elements[i].tagName === 'complexType') {
-            const child = findAttributes(elements[i].children);
+function findAttributes(elements: HTMLCollection): Element[] {
+    const attrs: Element[] = [];
+    for (const element of elements as any as Element[]) {
+        if (element.tagName === 'complexType') {
+            const child = findAttributes(element.children);
             if (child) {
                 return child;
             }
-        } else if (elements[i].tagName === 'attribute') {
-            attrs.push(elements[i]);
+        } else if (element.tagName === 'attribute') {
+            attrs.push(element);
         }
     }
     return attrs;
@@ -144,7 +143,7 @@ function isItemAvailable(itemName, maxOccurs, items) {
     }
     // if it didn't appear yet, or it can appear again, then it
     // is available, otherwise it't not
-    return count === 0 || parseInt(maxOccurs) > count;
+    return count === 0 || parseInt(maxOccurs, 0) > count;
 }
 
 function getAvailableElements(elements, usedItems): monaco.languages.CompletionItem[] {
@@ -181,9 +180,9 @@ function getAvailableElements(elements, usedItems): monaco.languages.CompletionI
     return availableItems;
 }
 
-function getAvailableAttribute(elements, usedChildTags) {
+function getAvailableAttribute(elements: HTMLCollection, usedChildTags) {
     const availableItems: monaco.languages.CompletionItem[] = [];
-    let children;
+    let children: HTMLCollection;
     for (let i = 0; i < elements.length; i++) {
         // annotation element only contains documentation,
         // so no need to process it here
@@ -220,7 +219,7 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
     return {
         triggerCharacters: ['<'],
         provideCompletionItems(model, position) {
-            const schemaNode = stringToXml(schemaString).childNodes[0];
+            const schemaNode = stringToXml(schemaString).childNodes[0] as Element;
             // get editor content before the pointer
             const textUntilPosition = model.getValueInRange({ startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column });
             // get content info - are we inside of the area where we don't want suggestions, what is the content without those areas
@@ -249,15 +248,15 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
                         // be the attributes we already used
                         if (lastOpenedTag.isAttributeSearch) {
                             const attrs = lastChild.attributes;
-                            for (let i = 0; i < attrs.length; i++) {
-                                usedItems.push(attrs[i].nodeName);
+                            for (const attribute of attrs as any as Attr[]) {
+                                usedItems.push(attribute.nodeName);
                             }
                         } else {
                             // if we are looking for child elements, then used items
                             // should be the elements that were already used
                             const children = lastChild.children;
-                            for (let i = 0; i < children.length; i++) {
-                                usedItems.push(children[i].tagName);
+                            for (const child of children as any as Element[]) {
+                                usedItems.push(child.tagName);
                             }
                         }
                         break;
@@ -268,12 +267,7 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
                 }
             }
             // find the last opened tag in the schema to see what elements/attributes it can have
-            let currentItem = schemaNode;
-            for (let i = 0; i < openedTags.length; i++) {
-                if (currentItem) {
-                    currentItem = findElements(currentItem.children, openedTags[i]);
-                }
-            }
+            const currentItem = schemaNode.querySelector(openedTags.map((t) => `element[name=${t}]`).join(' '));
 
             // return available elements/attributes if the tag exists in the schema, or an empty
             // array if it doesn't
