@@ -1,5 +1,5 @@
 export function stringToXml(text): Document {
-    return new DOMParser().parseFromString(text.replace(/xs\:/g, ''), 'text/xml');
+    return new DOMParser().parseFromString(text, 'text/xml');
 }
 function getLastOpenedTag(text) {
     // get all tags inside of the content
@@ -180,39 +180,39 @@ function getAvailableElements(elements, usedItems): monaco.languages.CompletionI
     return availableItems;
 }
 
-function getAvailableAttribute(elements: HTMLCollection, usedChildTags) {
-    const availableItems: monaco.languages.CompletionItem[] = [];
-    let children: HTMLCollection;
-    for (let i = 0; i < elements.length; i++) {
-        // annotation element only contains documentation,
-        // so no need to process it here
-        if (elements[i].tagName !== 'annotation') {
-            // get all child elements that have 'attribute' tag
-            children = findAttributes([elements[i]]);
-        }
-    }
-    // if there are no attributes, then there are no
-    // suggestions available
-    if (!children) {
-        return [];
-    }
-    for (let i = 0; i < children.length; i++) {
-        // get all attributes for the element
-        const attrs = getElementAttributes(children[i]);
-        // accept it in a suggestion list only if it is available
-        if (isItemAvailable(attrs.name, attrs.maxOccurs, usedChildTags)) {
-            // mark it as a 'property', and get it's documentation
-            availableItems.push({
-                label: attrs.name,
+function getAvailableAttribute(element: Element, usedAttributes: string[]) {
+    const complexTypeElement = [].concat(...element.children as any as HTMLElement[])
+        .find((c) => c.tagName === 'xs:complexType');
+    const attributeElements = [].concat(...complexTypeElement.children as any as HTMLElement[])
+        .filter((c) => c.tagName === 'xs:attribute' && usedAttributes.indexOf(c.getAttribute('name')) === -1)
+        .map((a) => {
+            const attributeName = a.getAttribute('name');
+            return {
+                label: attributeName,
                 kind: monaco.languages.CompletionItemKind.Property,
-                detail: attrs.type,
-                documentation: getItemDocumentation(children[i]),
-                insertText: `${attrs.name}=""`,
-            });
-        }
+                detail: a.getAttribute('type'),
+                documentation: getItemDocumentation(a),
+                insertText: `${attributeName}=""`,
+            } as monaco.languages.CompletionItem;
+        });
+    return attributeElements;
+}
+
+export function cropSegment(model: monaco.editor.IReadOnlyModel, position: monaco.Position, beforeToken: string, afterToken: string): string {
+    let contentPosition: number = position.column - 1;
+    for (let i = 0; i < position.lineNumber - 1; i++) {
+        contentPosition += model.getLineContent(i + 1).length + 2;
     }
-    // return the elements we found
-    return availableItems;
+    const modelValue = model.getValue();
+    const before = modelValue.substring(0, contentPosition);
+    const beforeSegment = before.substring(before.lastIndexOf(beforeToken) - beforeToken.length, before.length);
+    const after = modelValue.substring(contentPosition, modelValue.length);
+    const afterSegment = after.substring(0, after.indexOf(afterToken) + afterToken.length);
+    return `${beforeSegment}${afterSegment}`;
+}
+
+export function getOuterXmlElementSegment(model: monaco.editor.IReadOnlyModel, position: monaco.Position) {
+    return cropSegment(model, position, '<', '>');
 }
 
 export function getXsdCompletionProvider(schemaString: string): monaco.languages.CompletionItemProvider {
@@ -268,12 +268,15 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
             }
             // find the last opened tag in the schema to see what elements/attributes it can have
             const currentItem = schemaNode.querySelector(openedTags.map((t) => `element[name=${t}]`).join(' '));
+            const outerXmlNode = getOuterXmlElementSegment(model, position);
+
+            const usedAttributes = outerXmlNode.split(' ').map((n) => RegExp(/(\S+)=(["'])(\S)([>"'])?/).exec(n)).filter((a) => a != null).map((a) => a[1]);
 
             // return available elements/attributes if the tag exists in the schema, or an empty
             // array if it doesn't
             if (isAttributeSearch) {
                 // get attributes completions
-                return currentItem ? getAvailableAttribute(currentItem.children, usedItems) : [];
+                return currentItem ? getAvailableAttribute(currentItem, usedAttributes) : [];
             } else {
                 // get elements completions
                 return currentItem ? getAvailableElements(currentItem.children, usedItems) : [];
