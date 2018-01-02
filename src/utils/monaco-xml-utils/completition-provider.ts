@@ -44,8 +44,8 @@ function getAreaInfo(text) {
     let isCompletionAvailable = true;
     // remove all comments, strings and CDATA
     text = text.replace(/"([^"\\]*(\\.[^"\\]*)*)"|\'([^\'\\]*(\\.[^\'\\]*)*)\'|<!--([\s\S])*?-->|<!\[CDATA\[(.*?)\]\]>/g, '');
-    for (let i = 0; i < items.length; i++) {
-        const itemIdx = text.indexOf(items[i]);
+    for (const item of items) {
+        const itemIdx = text.indexOf(item);
         if (itemIdx > -1) {
             // we are inside one of unavailable areas, so we remote that area
             // from our clear text
@@ -60,124 +60,34 @@ function getAreaInfo(text) {
     };
 }
 
-function shouldSkipLevel(tagName) {
-    // if we look at the XSD schema, these nodes are containers for elements,
-    // so we can skip that level
-    return tagName === 'complexType' || tagName === 'all' || tagName === 'sequence' || tagName === 'extension';
-}
-
-function findElements(elements: HTMLCollection, elementName?: string) {
-    for (const element of elements as any as HTMLElement[]) {
-        // we are looking for elements, so we don't need to process annotations and attributes
-        if (element.tagName !== 'annotation' && element.tagName !== 'attribute') {
-            // if it is one of the nodes that do not have the info we need, skip it
-            // and process that node's child items
-            if (shouldSkipLevel(element.tagName)) {
-                const child = findElements(element.children, elementName);
-                // if child exists, return it
-                if (child) {
-                    return child;
-                }
-            } else if (!elementName) {
-                // if there is no elementName, return all elements (we'll explain
-                // this bit little later
-                return elements;
-            } else if (getElementAttributes(element).name === elementName) {
-                // find all the element attributes, and if is't name is the same
-                // as the element we're looking for, return the element.
-                return element;
-            }
-        }
-    }
-}
-
-function findAttributes(elements: HTMLCollection): Element[] {
-    const attrs: Element[] = [];
-    for (const element of elements as any as Element[]) {
-        if (element.tagName === 'complexType') {
-            const child = findAttributes(element.children);
-            if (child) {
-                return child;
-            }
-        } else if (element.tagName === 'attribute') {
-            attrs.push(element);
-        }
-    }
-    return attrs;
-}
-
-function getElementAttributes(element) {
-    const attrs = {};
-    for (let i = 0; i < element.attributes.length; i++) {
-        attrs[element.attributes[i].name] = element.attributes[i].value;
-    }
-    // return all attributes as an object
-    return attrs;
-}
-
-function getItemDocumentation(element) {
-    for (let i = 0; i < element.children.length; i++) {
-        // annotaion contains documentation, so calculate the
-        // documentation from it's child elements
-        if (element.children[i].tagName === 'annotation') {
+function getItemDocumentation(element: Element) {
+    for (const child of [].concat(...element.children as any as Element[])) {
+        if (child.tagName === 'xs:annotation') {
             return getItemDocumentation(element.children[0]);
-        } else if (element.children[i].tagName === 'documentation') {
-            return element.children[i].textContent;
+        } else if (child.tagName === 'xs:documentation') {
+            return child.textContent.trim();
         }
     }
 }
 
-function isItemAvailable(itemName, maxOccurs, items) {
-    // the default for 'maxOccurs' is 1
-    maxOccurs = maxOccurs || '1';
-    // the element can appere infinite times, so it is availabel
-    if (maxOccurs && maxOccurs === 'unbounded') {
-        return true;
-    }
-    // count how many times the element appered
-    let count = 0;
-    for (let i = 0; i < items.length; i++) {
-        if (items[i] === itemName) {
-            count++;
-        }
-    }
-    // if it didn't appear yet, or it can appear again, then it
-    // is available, otherwise it't not
-    return count === 0 || parseInt(maxOccurs, 0) > count;
-}
+function getAvailableElements(element: Element, usedItems: string[]): monaco.languages.CompletionItem[] {
+    const complexType = [].concat(...element.children as any as HTMLElement[])
+        .find((c) => c.tagName === 'xs:complexType');
 
-function getAvailableElements(elements, usedItems): monaco.languages.CompletionItem[] {
-    const availableItems: monaco.languages.CompletionItem[] = [];
-    let children;
-    for (let i = 0; i < elements.length; i++) {
-        // annotation element only contains documentation,
-        // so no need to process it here
-        if (elements[i].tagName !== 'annotation') {
-            // get all child elements that have 'element' tag
-            children = findElements([elements[i]]);
-        }
-    }
-    // if there are no such elements, then there are no suggestions
-    if (!children) {
-        return [];
-    }
-    for (let i = 0; i < children.length; i++) {
-        // get all element attributes
-        const elementAttrs = getElementAttributes(children[i]);
-        // the element is a suggestion if it's available
-        if (isItemAvailable(elementAttrs.name, elementAttrs.maxOccurs, usedItems)) {
-            // mark it as a 'field', and get the documentation
-            availableItems.push({
-                label: elementAttrs.name,
-                kind: monaco.languages.CompletionItemKind.Field,
-                detail: elementAttrs.type,
-                documentation: getItemDocumentation(children[i]),
-                insertText: `<${elementAttrs.name}></${elementAttrs.name}>`
-            });
-        }
-    }
-    // return the suggestions we found
-    return availableItems;
+    const sequences =  [].concat(...complexType.children).filter((child) => child.tagName === 'xs:sequence');
+    const allowedElements = [].concat(...sequences.map((s) => [].concat(...s.children).filter((child) => child.tagName === 'xs:element')));
+
+    return allowedElements.map((el) => {
+        const elementName = el.getAttribute('name');
+        const elementType = el.getAttribute('type');
+        return {
+            label: elementName,
+            kind: monaco.languages.CompletionItemKind.Field,
+            detail: elementType,
+            documentation: getItemDocumentation(el),
+            insertText: `<${elementName}></${elementName}>`
+        } as monaco.languages.CompletionItem;
+    });
 }
 
 function getAvailableAttribute(element: Element, usedAttributes: string[]) {
@@ -270,7 +180,11 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
             const currentItem = schemaNode.querySelector(openedTags.map((t) => `element[name=${t}]`).join(' '));
             const outerXmlNode = getOuterXmlElementSegment(model, position);
 
-            const usedAttributes = outerXmlNode.split(' ').map((n) => RegExp(/(\S+)=(["'])(\S)([>"'])?/).exec(n)).filter((a) => a != null).map((a) => a[1]);
+            const usedAttributes: string[] = outerXmlNode.split(' ')
+                .map((n) => RegExp(/(\S+)=(["'])(\S)([>"'])?/)
+                .exec(n))
+                .filter((a) => a != null)
+                .map((a) => a[1]);
 
             // return available elements/attributes if the tag exists in the schema, or an empty
             // array if it doesn't
@@ -279,7 +193,7 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
                 return currentItem ? getAvailableAttribute(currentItem, usedAttributes) : [];
             } else {
                 // get elements completions
-                return currentItem ? getAvailableElements(currentItem.children, usedItems) : [];
+                return currentItem ? getAvailableElements(currentItem, usedItems) : [];
             }
         },
 
