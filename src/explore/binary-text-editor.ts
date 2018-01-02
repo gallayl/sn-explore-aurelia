@@ -8,7 +8,6 @@ import { ContentTypes } from 'sn-client-js';
 import { BinaryField } from 'sn-client-js/dist/src/BinaryField';
 import { GenericContent } from 'sn-client-js/dist/src/ContentTypes';
 import { SensenetCtdLanguage } from 'utils/monaco-languages/sensenet-ctd';
-import { registerXsdCompletitionProvider } from 'utils/monaco-xml-utils/completition-provider';
 
 @customElement('binary-text-editor')
 export class BinaryTextEditor {
@@ -26,8 +25,13 @@ export class BinaryTextEditor {
 
     private initMonaco() {
         this.monacoEditorInstance = monaco.editor.create(this.monacoEditArea, {
-          value: this.binaryData,
-          language: 'plaintext',
+            value: this.binaryData,
+            language: 'plaintext',
+        });
+
+        this.monacoEditArea.addEventListener('keydown', (ev) => {
+            // Stop closing by ESC - MDC vs Monaco
+            ev.stopImmediatePropagation();
         });
     }
 
@@ -97,14 +101,20 @@ export class BinaryTextEditor {
         if (!this.explicitSetupForContent(content)) {
             const languages: monaco.languages.ILanguageExtensionPoint[] = monaco.languages.getLanguages();
             const available = languages.filter((lang) => {
-                    return lang.extensions.filter((e) => content.Name.endsWith(e)).length;
-                }).map((lang) => lang.id);
+                return lang.extensions.filter((e) => content.Name.endsWith(e)).length;
+            }).map((lang) => lang.id);
             monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), available[0] || 'plaintext');
         }
 
         // tslint:disable-next-line:no-string-literal
         this.monacoEditorInstance['_themeService'].setTheme(localStorage.getItem('sn-dark-theme') === 'true' ? 'vs-dark' : 'vs');
         this.isLoading = false;
+
+        // for tabbing - monaco vs material design
+        setTimeout(() => {
+            // this.editBinaryMDCDialog.set
+            this.editBinaryMDCDialog.focusTrap_.deactivate();
+        }, 500);
     }
 
     public cancel() {
