@@ -6,7 +6,25 @@ import { ContentTypeDefinitionXsd } from '../xsd-schemas';
 
 export const SensenetCtdCompetitionProvider: monaco.languages.DocumentFormattingEditProvider = {
         provideDocumentFormattingEdits: (model: monaco.editor.IReadOnlyModel, options: monaco.languages.FormattingOptions, token: monaco.CancellationToken) => {
-            const formatted = new DOMParser().parseFromString(model.getValue(), 'text/xml').childNodes[0].outerHTML; // xmlFormatter(model.getValue(monaco.editor.EndOfLinePreference.TextDefined));
+            const PADDING = '\t'; // set desired indent size here
+            const reg = /(>)(<)(\/*)/g;
+            let pad = 0;
+            let xml = model.getValue();
+            xml = xml.replace(reg, '$1\r\n$2$3');
+            const formatted = xml.split('\r\n').map((node) => {
+                let indent = 0;
+                if (node.match(/.+<\/\w[^>]*>$/)) {
+                    indent = 0;
+                } else if (node.match(/^<\/\w/) && pad > 0) {
+                    pad -= 1;
+                } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
+                    indent = 1;
+                } else {
+                    indent = 0;
+                }
+                pad += indent;
+                return PADDING.repeat(pad - indent) + node;
+            }).join('\r\n');
             return [{
                 eol: monaco.editor.EndOfLineSequence.LF,
                 text: formatted,
@@ -15,10 +33,6 @@ export const SensenetCtdCompetitionProvider: monaco.languages.DocumentFormatting
         }
 
 };
-
-export class SensenetCtdFormattingProvider {
-
-}
 
 export class SensenetCtdLanguage {
     public static readonly LanguageId: string = 'sensenet-ctd';
