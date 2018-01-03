@@ -13,7 +13,7 @@ export class Logout {
     ) { }
 
     public logout() {
-        this.snService.Authentication.Logout().subscribe((success) => {
+        this.snService.Authentication.Logout().subscribe(() => {
             this.router.navigate('/');
         });
     }

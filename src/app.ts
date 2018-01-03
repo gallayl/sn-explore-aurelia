@@ -1,11 +1,9 @@
-import { Aurelia, autoinject, bindable } from 'aurelia-framework';
-import {
-  Router, RouterConfiguration, PipelineStep,
-  NavigationInstruction, Next, Redirect
-} from 'aurelia-router';
+import { autoinject, bindable } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
-import { Repository, Authentication } from 'sn-client-js';
-import { ContentLogger } from "utils";
+import {
+  NavigationInstruction, Next, PipelineStep,
+  Redirect, Router, RouterConfiguration
+} from 'aurelia-router';
 
 import { MDCToolbar } from "@material/toolbar";
 import { Role, RoleHelper } from 'utils/role-helper';
@@ -13,14 +11,13 @@ import { Role, RoleHelper } from 'utils/role-helper';
 @autoinject
 export class App {
 
-  router: Router;
-  constructor(private snService: Repository.BaseRepository, private logger: ContentLogger, private roleHelper: RoleHelper) { }
+  public router: Router;
+  constructor(private roleHelper: RoleHelper) { }
   @bindable
-  toolbarRef: HTMLElement;
-
+  public toolbarRef: HTMLElement;
 
   public darkthemeChanged(newValue: boolean) {
-    localStorage.setItem('sn-dark-theme', newValue ? 'true' : 'false')
+    localStorage.setItem('sn-dark-theme', newValue ? 'true' : 'false');
     this.updateTheme();
   }
 
@@ -33,7 +30,7 @@ export class App {
   @bindable
   public darktheme: boolean = localStorage.getItem('sn-dark-theme') === 'true';
 
-  configureRouter(config: RouterConfiguration, router: Router) {
+  public configureRouter(config: RouterConfiguration, router: Router) {
     config.title = 'sensenet explore';
     config.addAuthorizeStep(SnClientAuthorizeStep);
     config.fallbackRoute('');
@@ -48,41 +45,42 @@ export class App {
     this.router = router;
   }
 
-  attached() {
+  public attached() {
     this.updateTheme();
-    
-    this.roleHelper.OnRolesChanged.subscribe(()=>{
-      this.router.routes.forEach(async route=>{
+
+    this.roleHelper.OnRolesChanged.subscribe(() => {
+      this.router.routes.forEach(async (route) => {
         route.settings.show = true;
         for (const role of route.settings.roles) {
           const isInRole = await this.roleHelper.IsInRole(role);
-          if (!isInRole){
+          if (!isInRole) {
             route.settings.show = false;
           }
         }
-      })
-    })
-    const toolbar: MDCToolbar = new MDCToolbar(this.toolbarRef);
+      });
+    });
+    // tslint:disable-next-line:no-unused-expression
+    new MDCToolbar(this.toolbarRef);
   }
 }
 
 @autoinject
 class SnClientAuthorizeStep implements PipelineStep {
 
-  constructor(private snService: Repository.BaseRepository, private roleHelper: RoleHelper) { }
+  constructor(private roleHelper: RoleHelper) { }
 
   public async run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     const instructions = navigationInstruction.getAllInstructions();
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       for (const role in Role) {
-        if (instructions.some(i => i.config.settings.roles.indexOf(role) !== -1)) {
-          const isInRole = await this.roleHelper.IsInRole(role as Role)
+        if (instructions.some((i) => i.config.settings.roles.indexOf(role) !== -1)) {
+          const isInRole = await this.roleHelper.IsInRole(role as Role);
           if (!isInRole) {
             return resolve(next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : '')));
           }
         }
       }
       return resolve(next());
-    })
+    });
   }
 }

@@ -1,41 +1,41 @@
-import {browser, element, by, By, $, $$, ExpectedConditions} from 'aurelia-protractor-plugin/protractor';
+import {browser, by, element, ExpectedConditions} from 'aurelia-protractor-plugin/protractor';
 
-export class PageObject_Welcome {
-  getGreeting() {
+export class PageObjectWelcome {
+  public getGreeting() {
     return element(by.tagName('h2')).getText();
   }
 
-  getFirstnameElement() {
+  public getFirstnameElement() {
     return element(by.valueBind('firstName'));
   }
 
-  setFirstname(value) {
+  public setFirstname(value) {
     const firstName = this.getFirstnameElement();
     return firstName.clear().then(() => firstName.sendKeys(value));
   }
 
-  getLastnameElement() {
+  public getLastnameElement() {
     return element(by.valueBind('lastName'));
   }
 
-  setLastname(value) {
+  public setLastname(value) {
     const lastName = this.getLastnameElement();
     return lastName.clear().then(() => lastName.sendKeys(value));
   }
 
-  getFullnameElement() {
+  public getFullnameElement() {
     return element(by.css('.help-block'));
   }
 
-  getFullname() {
+  public getFullname() {
     return this.getFullnameElement().getText();
   }
 
-  pressSubmitButton() {
+  public pressSubmitButton() {
     return element(by.css('button[type="submit"]')).click();
   }
 
-  async openAlertDialog() {
+  public async openAlertDialog() {
     await this.pressSubmitButton();
 
     await browser.wait(ExpectedConditions.alertIsPresent(), 5000);

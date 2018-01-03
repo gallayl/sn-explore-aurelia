@@ -1,16 +1,15 @@
 import { App } from 'app';
 import { Mocks } from "sn-client-js";
 import { RoleHelper } from 'utils/role-helper';
-import { MockRepository } from 'sn-client-js/dist/test/Mocks';
 
 class RouterStub {
-  routes;
-  
-  configure(handler) {
+  public routes;
+
+  public configure(handler) {
     handler(this);
   }
 
-  map(routes) {
+  public map(routes) {
     this.routes = routes;
   }
 }
@@ -22,7 +21,7 @@ describe('the App module', () => {
   beforeEach(() => {
     mockedRouter = new RouterStub();
     const mockRepo = new Mocks.MockRepository();
-    sut = new App(mockRepo, null, new RoleHelper(mockRepo));
+    sut = new App(new RoleHelper(mockRepo));
     sut.configureRouter(mockedRouter, mockedRouter);
   });
 

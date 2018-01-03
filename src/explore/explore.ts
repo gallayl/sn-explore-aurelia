@@ -1,7 +1,6 @@
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { autoinject, bindable, computedFrom } from "aurelia-framework";
 import { Router } from "aurelia-router";
-import { BindingSignaler } from 'aurelia-templating-resources';
 import { BinaryTextEditor } from "explore/binary-text-editor";
 import { Subscription } from "rxjs/subscription";
 import { ActionName, Content, ContentTypes, Query, Repository, SavedContent } from "sn-client-js";
@@ -14,8 +13,6 @@ export class Index {
     public binaryTextEditor: BinaryTextEditor;
     public setPermissionsDialog: SetPermissionsDialog;
     public searchBar: HTMLInputElement;
-
-    private readonly queryChanged: string = 'explore-query-changed';
 
     @bindable
     public RootContent: Content;
@@ -34,6 +31,8 @@ export class Index {
 
     public addContentDialog: AddContentDialog;
     public editContentDialog: EditContentDialog;
+
+    public searchField: MDCTextField;
 
     public deleteContentComponent: DeleteContent;
 
@@ -89,7 +88,7 @@ export class Index {
     }
 
     public attached() {
-        const searchField = new MDCTextField(this.searchBar);
+        this.searchField = new MDCTextField(this.searchBar);
     }
 
     public detached() {
@@ -97,8 +96,7 @@ export class Index {
     }
 
     constructor(private snService: Repository.BaseRepository,
-                private router: Router,
-                private readonly bindingSignaler: BindingSignaler,
+                private router: Router
             ) {
     }
 
@@ -157,7 +155,7 @@ export class Index {
         this.Scope.GetRepository().MoveBatch(contentList, item.Path);
     }
 
-    public async FilesDropped(event: DragEvent, files: FileList) {
+    public async FilesDropped(event: DragEvent) {
         await this.Scope.UploadFromDropEvent({
             ContentType: ContentTypes.File as any,
             CreateFolders: true,
@@ -191,8 +189,9 @@ export class Index {
 
     @computedFrom('queryString', 'searchEnabled')
     public get query(): Query | undefined {
+        const searchString = `${this.queryString}*`;
         return this.queryString && this.searchEnabled && new Query((q) =>
-            q.Equals('_Text', this.queryString + '*'),
+            q.InTree(this.Scope.Path).And.Equals('_Text', searchString).Or.Equals('DisplayName', searchString).Or.Equals('Name', searchString)
         );
     }
 

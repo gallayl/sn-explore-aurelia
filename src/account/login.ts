@@ -71,14 +71,15 @@ export class Login {
     public attached() {
         const textfields = document.querySelectorAll('.login-wrapper .mdc-text-field');
         [].forEach.call(textfields, (textfield: any) => {
-            const f = new MDCTextField(textfield);
+            // tslint:disable-next-line:no-unused-expression
+            new MDCTextField(textfield);
         });
     }
 
     public async googleAuthClick() {
         this.isLoginInProgress = true;
         try {
-            const token = await this.snService.Authentication.GetOauthProvider(GoogleOauthProvider).Login();
+            await this.snService.Authentication.GetOauthProvider(GoogleOauthProvider).Login();
             this.router.navigate('/');
         } catch (error) {
             /** */
