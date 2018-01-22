@@ -3,10 +3,7 @@
 
 import { bindable, computedFrom, customElement } from 'aurelia-framework';
 import { dialog } from 'material-components-web/dist/material-components-web';
-import { Content } from 'sn-client-js';
-import { ContentTypes } from 'sn-client-js';
-import { BinaryField } from 'sn-client-js/dist/src/BinaryField';
-import { GenericContent } from 'sn-client-js/dist/src/ContentTypes';
+import { BinaryField, Content, ContentTypes } from 'sn-client-js';
 import { SensenetCtdLanguage } from 'utils/monaco-languages/sensenet-ctd';
 
 @customElement('binary-text-editor')
@@ -75,7 +72,7 @@ export class BinaryTextEditor {
     @bindable
     public binaryData: any;
 
-    public explicitSetupForContent(content: Content<GenericContent>): boolean {
+    public explicitSetupForContent(content: Content<ContentTypes.File>): boolean {
         const schemas = content.GetSchemaWithParents().map((s) => s.ContentTypeName);
         if (schemas.indexOf('ContentType') > -1) {
             SensenetCtdLanguage.Register();

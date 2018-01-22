@@ -5,7 +5,7 @@ import { getXsdCompletionProvider } from "utils/monaco-xml-utils/completition-pr
 import { ContentTypeDefinitionXsd } from '../xsd-schemas';
 
 export const SensenetCtdCompetitionProvider: monaco.languages.DocumentFormattingEditProvider = {
-        provideDocumentFormattingEdits: (model: monaco.editor.IReadOnlyModel, options: monaco.languages.FormattingOptions, token: monaco.CancellationToken) => {
+        provideDocumentFormattingEdits: (model: monaco.editor.IReadOnlyModel) => {
             const PADDING = '\t'; // set desired indent size here
             const reg = /(>)(<)(\/*)/g;
             let pad = 0;

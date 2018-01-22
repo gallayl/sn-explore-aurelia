@@ -204,6 +204,10 @@ export class Index {
         }
     }
 
+    public reloadSchema() {
+        /** */
+    }
+
     public getActions(content: Content<ContentTypes.GenericContent>): ActionModel[] {
 
         return (content.Actions as any as ActionModel[]).filter((a) => {

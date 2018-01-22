@@ -70,7 +70,7 @@ function getItemDocumentation(element: Element) {
     }
 }
 
-function getAvailableElements(element: Element, usedItems: string[]): monaco.languages.CompletionItem[] {
+function getAvailableElements(element: Element): monaco.languages.CompletionItem[] {
     const complexType = [].concat(...element.children as any as HTMLElement[])
         .find((c) => c.tagName === 'xs:complexType');
 

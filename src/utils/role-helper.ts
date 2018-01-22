@@ -2,7 +2,7 @@ import { autoinject } from "aurelia-framework";
 import { Observable } from "rxjs/Observable";
 import { ReplaySubject } from "rxjs/ReplaySubject";
 import { Repository } from "sn-client-js";
-import { Group } from "sn-client-js/dist/src/ContentTypes";
+import { Group } from "sn-client-js/dist/src/Content/DefaultContentTypes";
 
 export enum Role {
     IsGlobalAdministratorUser = 'IsGlobalAdministratorUser',
