@@ -32,7 +32,7 @@ export async function configure(aurelia: Aurelia) {
     const repo = new SnRepository(
       {
         JwtTokenPersist: 'expiration',
-        RepositoryUrl: 'https://sensenet7-local',
+        RepositoryUrl: 'https://dmsservice.demo.sensenet.com',
       });
     AddGoogleAuth(repo, {
       ClientId: '590484552404-d6motta5d9qeh0ln81in80fn6mqf608e.apps.googleusercontent.com',
