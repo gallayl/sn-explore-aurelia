@@ -249,9 +249,7 @@ export class Index {
                 this.binaryTextEditor.open(this.snService, content as any);
                 break;
             default:
-                // console.log(content, action);
                 break;
-
         }
     }
 }

@@ -1,6 +1,6 @@
 import { autoinject } from "aurelia-framework";
 import { Group } from "@sensenet/default-content-types";
-import { ObservableValue } from "@sensenet/client-utils";
+import { ObservableValue, Retrier } from "@sensenet/client-utils";
 import { Repository } from "@sensenet/client-core";
 import { ConstantContent } from "@sensenet/client-core/dist/Repository/ConstantContent";
 
@@ -16,7 +16,7 @@ export class RoleHelper {
     private groups: Group[] = [];
     private roles: Map<Role, boolean> = new Map();
 
-    OnRolesChanged: ObservableValue<void> = new ObservableValue();
+    OnRolesChanged: ObservableValue<any> = new ObservableValue();
 
     private async evaluateIsExploreUser() {
         try {
@@ -46,7 +46,16 @@ export class RoleHelper {
         }
     }
 
+    private isInitialized = false;
     public async IsInRole(role: Role): Promise<boolean> {
+        await Retrier.Create(async ()=>this.isInitialized)
+            .Setup({
+                RetryIntervalMs: 10,
+                Retries: 100000,
+                timeoutMs: 10000,
+            })
+            .Run();
+
         if (this.roles.has(role)) {
             return this.roles.get(role) || false;
         } else {
@@ -64,9 +73,10 @@ export class RoleHelper {
     constructor(private repo: Repository) {
 
         repo.authentication.currentUser.subscribe(async (u) => {
+            this.isInitialized = false;
             this.roles.clear();
             // tslint:disable-next-line:no-string-literal
-            const isVisitor = u.Id === ConstantContent.VISITOR_USER.Id;
+            const isVisitor = !u || u.Id === ConstantContent.VISITOR_USER.Id;
             this.groups = [];
             if (!isVisitor) {
                 try {
@@ -80,7 +90,8 @@ export class RoleHelper {
 
             this.roles.set(Role.IsLoggedIn, !isVisitor);
             this.roles.set(Role.IsVisitor, isVisitor);
-            this.OnRolesChanged.setValue(Math.random() as any);            
-        }, true);
+            this.OnRolesChanged.setValue(Math.random());
+            this.isInitialized = true;
+        });
     }
 }
