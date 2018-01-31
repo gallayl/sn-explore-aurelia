@@ -3,7 +3,7 @@ import { autoinject } from 'aurelia-framework';
 import { Router } from 'aurelia-router';
 import { Repository } from "@sensenet/client-core";
 import { ValidationController, ValidationControllerFactory, ValidationRules } from 'aurelia-validation';
-// import { GoogleOauthProvider } from 'sn-client-auth-google';
+import { GoogleOauthProvider } from '@sensenet/authentication-google';
 
 @autoinject
 export class Login {
@@ -24,12 +24,11 @@ export class Login {
     constructor(
         private snService: Repository,
         private router: Router,
+        private googleAuth: GoogleOauthProvider,
         controllerFactory: ValidationControllerFactory,
     ) {
         this.repositoryUrl = this.snService.configuration.repositoryUrl;
         this.controller = controllerFactory.createForCurrentScope();
-        // ToDo
-        // this.controller.addRenderer(new MterializeFormValidationRenderer())
     }
 
     public rules = ValidationRules
@@ -79,7 +78,7 @@ export class Login {
     public async googleAuthClick() {
         this.isLoginInProgress = true;
         try {
-            await this.snService.authentication.getOauthProvider(GoogleOauthProvider).Login();
+            this.googleAuth.login();
             this.router.navigate('/');
         } catch (error) {
             /** */

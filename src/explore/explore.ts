@@ -17,10 +17,10 @@ export class Index {
     public searchBar: HTMLInputElement;
 
     @bindable
-    public RootContent: IContent;
+    public rootContent: IContent;
 
     @bindable
-    public Scope: IContent;
+    public scope: IContent;
 
     @bindable
     public AllowedChildTypes: Array<{ new(...args): IContent }> = [];
@@ -50,12 +50,12 @@ export class Index {
 
     public async Select(content: GenericContent) {
         if (content.IsFolder) {
-            if (this.Scope.Id === content.Id) {
-                this.Scope = (await this.snService.load({
+            if (this.scope.Id === content.Id) {
+                this.scope = (await this.snService.load({
                     idOrPath: content.ParentId,
                 })).d;
             } else {
-                this.Scope = content;
+                this.scope = content;
             }
         } else {
             this.EditItem(content);
@@ -103,7 +103,7 @@ export class Index {
         if (params.path) {
             this.changePath(params.path);
         }
-        this.RootContent = (await this.snService.load({
+        this.rootContent = (await this.snService.load({
             idOrPath: '/Root',
             oDataOptions: {
             select: 'all',
@@ -112,9 +112,9 @@ export class Index {
     }
 
     private contentMoveSubscription: IDisposable;
-    public ScopeChanged() {
-        this.contentMoveSubscription.dispose();
-        this.router.navigateToRoute('explore', { path: this.Scope.Path }, { replace: true });
+    public scopeChanged() {
+        this.contentMoveSubscription && this.contentMoveSubscription.dispose();
+        this.router.navigateToRoute('explore', { path: this.scope.Path }, { replace: true });
         this.contentMoveSubscription = this.eventHub.onContentMoved.subscribe((m)=>{
             this.router.navigateToRoute('explore', { path: m.content.Path }, { replace: true });
         })
@@ -130,7 +130,7 @@ export class Index {
             idOrPath: path,
             oDataOptions: { select: 'all' }
         }).then((selection) => {
-            this.Scope = selection.d;
+            this.scope = selection.d;
         });
     }
 
@@ -144,14 +144,14 @@ export class Index {
 
     public ContentDropped(content: IContent) {
         this.snService.move({
-            targetPath: this.Scope.Path,
+            targetPath: this.scope.Path,
             idOrPath: content.Id,
         })
     }
 
     public ContentListDropped(contentList: IContent[]) {
         this.snService.move({
-            targetPath: this.Scope.Path,
+            targetPath: this.scope.Path,
             idOrPath: contentList.map(c=>c.Id),
         })        
     }
@@ -191,7 +191,7 @@ export class Index {
         this.deleteContentComponent.open(this.SelectedContent);
     }
 
-    public SelectedContentChanged() {
+    public selectedContentChanged() {
         if (this.SelectedContent.length) {
             this.ShowDeleteSelected = true;
         } else {
@@ -207,7 +207,7 @@ export class Index {
     public get query(): Query<IContent> | undefined {
         const searchString = `${this.queryString}*`;
         return this.queryString && this.searchEnabled && new Query((q) =>
-            q.inTree(this.Scope.Path).and.equals('_Text', searchString).or.equals('DisplayName', searchString).or.equals('Name', searchString)
+            q.inTree(this.scope.Path).and.equals('_Text', searchString).or.equals('DisplayName', searchString).or.equals('Name', searchString)
         );
     }
 

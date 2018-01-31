@@ -8,7 +8,7 @@
                     <span class="mdc-typography--headline">Explore</span>
                 </div>
                 <div class="mdc-permanent-drawer__content">
-                    <tree content.bind="RootContent" selection.two-way='Scope'></tree>
+                    <tree content.bind="rootContent" selection.two-way='scope'></tree>
                 </div>
             </nav>
 
@@ -16,7 +16,7 @@
                 <header class="mdc-toolbar">
                     <div class="mdc-toolbar__row">
                         <section class="mdc-toolbar__section mdc-toolbar__section--align-start" style="padding-left: 1em;">
-                            <breadcrumbs selection.two-way="Scope" path-change.call="changePath(path)" class="mdc-typography--button"></breadcrumbs>
+                            <breadcrumbs selection.two-way="scope" path-change.call="changePath(path)" class="mdc-typography--button"></breadcrumbs>
                         </section>                        
 
                         <section class="mdc-toolbar__section mdc-toolbar__section--align-end">
@@ -38,7 +38,7 @@
                 </header>
 
                 <div class="content-wrapper col xl10 l8 m8 s12">
-                    <content-list scope.bind="Scope" 
+                    <content-list scope.bind="scope" 
                             get-items.call="GetSelectedChildren(scope, query)" 
                             get-actions.call="getActions(content)"
                             on-activate.call="Select(content)"
@@ -54,7 +54,7 @@
                 </div>
             </main>
 
-        <add-content-dialog view-model.ref="addContentDialog" parent.bind="Scope"></add-content-dialog>
+        <add-content-dialog view-model.ref="addContentDialog" parent.bind="scope"></add-content-dialog>
         <edit-content-dialog view-model.ref="editContentDialog"></edit-content-dialog>
         <delete-content-dialog view-model.ref="deleteContentComponent"></delete-content-dialog>
         <set-permissions-dialog view-model.ref="setPermissionsDialog"></set-permissions-dialog>

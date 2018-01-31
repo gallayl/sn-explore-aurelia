@@ -8,6 +8,19 @@ import { PLATFORM } from 'aurelia-pal';
 
 import { Repository } from '@sensenet/client-core';
 import { JwtService } from "@sensenet/authentication-jwt"
+import { addGoogleAuth, GoogleOauthProvider } from '@sensenet/authentication-google';
+
+const repo = new Repository(
+  {
+    sessionLifetime: 'expiration',
+    repositoryUrl: 'https://dmsservice.demo.sensenet.com',
+  });
+
+const jwtService = new JwtService(repo);
+repo.authentication = jwtService;
+const googleAuthProvider = addGoogleAuth(jwtService, {
+    clientId: '590484552404-d6motta5d9qeh0ln81in80fn6mqf608e.apps.googleusercontent.com',
+})
 
 export async function configure(aurelia: Aurelia) {
   aurelia.use
@@ -24,21 +37,9 @@ export async function configure(aurelia: Aurelia) {
   // Anyone wanting to use HTMLImports to load views, will need to install the following plugin.
   // aurelia.use.plugin(PLATFORM.moduleName('aurelia-html-import-template-loader'));
 
-  aurelia.container.registerSingleton(Repository, () => {
-    const repo = new Repository(
-      {
-        sessionLifetime: 'expiration',
-        repositoryUrl: 'https://dmsservice.demo.sensenet.com',
-      });
-      const auth = new JwtService(repo);
-      repo.authentication = auth;
-    // ToDo
-    // AddGoogleAuth(repo, {
-    //   ClientId: '590484552404-d6motta5d9qeh0ln81in80fn6mqf608e.apps.googleusercontent.com',
-    // });
-
-    return repo;
-  });
+  aurelia.container.registerSingleton(Repository, () => repo);
+  aurelia.container.registerSingleton(JwtService, () => jwtService);
+  aurelia.container.registerSingleton(GoogleOauthProvider, ()=>googleAuthProvider)
 
   await aurelia.start();
   await aurelia.setRoot(PLATFORM.moduleName('app'));

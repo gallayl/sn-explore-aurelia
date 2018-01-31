@@ -12,12 +12,9 @@ export class Logout {
         private router: Router,
     ) { }
 
-    public async logout() {
-        try {
-            await this.snService.authentication.logout();            
-        } finally {
-            this.router.navigate('/');
-        }
+    public logout() {
+        this.snService.authentication.logout();            
+        this.router.navigate('/');
     }
 
     public goBack() {

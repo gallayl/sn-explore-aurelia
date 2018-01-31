@@ -47,7 +47,6 @@ export class RoleHelper {
     }
 
     public async IsInRole(role: Role): Promise<boolean> {
-
         if (this.roles.has(role)) {
             return this.roles.get(role) || false;
         } else {
@@ -65,7 +64,6 @@ export class RoleHelper {
     constructor(private repo: Repository) {
 
         repo.authentication.currentUser.subscribe(async (u) => {
-            this.OnRolesChanged.setValue(Math.random() as any);            
             this.roles.clear();
             // tslint:disable-next-line:no-string-literal
             const isVisitor = u.Id === ConstantContent.VISITOR_USER.Id;
@@ -82,6 +80,7 @@ export class RoleHelper {
 
             this.roles.set(Role.IsLoggedIn, !isVisitor);
             this.roles.set(Role.IsVisitor, isVisitor);
-        });
+            this.OnRolesChanged.setValue(Math.random() as any);            
+        }, true);
     }
 }
