@@ -1,6 +1,6 @@
 import { App } from 'app';
-import { Mocks } from "sn-client-js";
 import { RoleHelper } from 'utils/role-helper';
+import { Repository } from '@sensenet/client-core';
 
 class RouterStub {
   public routes;
@@ -20,7 +20,7 @@ describe('the App module', () => {
 
   beforeEach(() => {
     mockedRouter = new RouterStub();
-    const mockRepo = new Mocks.MockRepository();
+    const mockRepo = new Repository();
     sut = new App(new RoleHelper(mockRepo));
     sut.configureRouter(mockedRouter, mockedRouter);
   });

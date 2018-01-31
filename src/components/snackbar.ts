@@ -1,11 +1,11 @@
 import { MDCDialog } from '@material/dialog';
 import { MDCSnackbar } from '@material/snackbar';
 import { autoinject, bindable } from 'aurelia-framework';
-import 'rxjs/add/operator/debounceTime';
-import { Subject } from 'rxjs/Subject';
-import { Repository } from "sn-client-js";
 
 import groupBy from 'lodash.groupby';
+import { Repository } from '@sensenet/client-core';
+import { EventHub } from '@sensenet/repository-events';
+import { ObservableValue } from '@sensenet/client-utils/dist/ObservableValue';
 
 export enum SnackEventType {
     Created = 'created',
@@ -33,7 +33,7 @@ export class BulkSnackInfo<T extends SnackInfo> {
 @autoinject
 export class Snackbar {
 
-    public InfosSubject: Subject<SnackInfo> = new Subject<SnackInfo>();
+    public InfosSubject: ObservableValue<SnackInfo> = new ObservableValue<SnackInfo>();
 
     @bindable
     public ActualInfos: SnackInfo[] = [];
@@ -63,100 +63,102 @@ export class Snackbar {
         return result;
     }
 
+    private readonly eventHub: EventHub;
+
     constructor(
-        private readonly repository: Repository.BaseRepository
+        private readonly repository: Repository
     ) {
 
-        this.repository.Events.OnContentCreated.subscribe((c) => {
-            const summary = `'${c.Content.DisplayName || c.Content.Name}' has been created.`;
-            this.InfosSubject.next({
+        this.eventHub = new EventHub(this.repository);
+        this.eventHub.onContentCreated.subscribe((c) => {
+            const summary = `'${(c as any).content.DisplayName || c.content.Name}' has been created.`;
+            this.InfosSubject.setValue({
                 Type: SnackEventType.Created,
                 Message: summary,
-                DialogHtml: `The content has been created and saved to the sensenet ECM Repository. <br /> Content path: <i>${c.Content.Path}</i>`,
+                DialogHtml: `The content has been created and saved to the sensenet ECM Repository. <br /> Content path: <i>${c.content.Path}</i>`,
                 BulkMessage: '{0} content has been created'
             });
         });
 
-        this.repository.Events.OnContentCreateFailed.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentCreateFailed.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.CreateFailed,
-                Message: this.tryGetErrorResponseMessage(c.Error) || `Failed to create content '${c.Content.DisplayName || c.Content.Name}'.`,
-                DialogHtml: `There was an error during creating the content '${c.Content.Name}'`,
+                Message: this.tryGetErrorResponseMessage(c.error) || `Failed to create content '${c.content.Name}'.`,
+                DialogHtml: `There was an error during creating the content '${c.content.Name}'`,
                 BulkMessage: 'Failed to create {0} content'
             });
         });
 
-        this.repository.Events.OnContentModified.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentModified.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.Modified,
-                Message: `'${c.Content.DisplayName}' has been modified.`,
+                Message: `'${c.content.Name}' has been modified.`,
                 BulkMessage: '{0} content has been modified',
-                DialogHtml: `<p>The content has been modified and saved to the sensenet ECM Repository. <br /> Content path: <i>${c.Content.Path}</i> </p> Changes: <br /> <textarea style="width: 100%; height: 200px;" readonly>${JSON.stringify(c.Changes, null, 3)}</textarea> `
+                DialogHtml: `<p>The content has been modified and saved to the sensenet ECM Repository. <br /> Content path: <i>${c.content.Path}</i> </p> Changes: <br /> <textarea style="width: 100%; height: 200px;" readonly>${JSON.stringify(c.changes, null, 3)}</textarea> `
             });
         });
 
-        this.repository.Events.OnContentModificationFailed.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentModificationFailed.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.ModifyFailed,
-                Message:  this.tryGetErrorResponseMessage(c.Error) || `Failed to modify '${c.Content.DisplayName || c.Content.Name}'`,
+                Message:  this.tryGetErrorResponseMessage(c.error) || `Failed to modify '${c.content.Name}'`,
                 BulkMessage: 'Failed to modify {0} content',
-                DialogHtml: `<p>There was an error during saving the content to the sensenet ECM Repository. <br /> Content path: <i>${c.Content.Path}</i> </p>
+                DialogHtml: `<p>There was an error during saving the content to the sensenet ECM Repository. <br /> Content path: <i>${c.content.Path}</i> </p>
                 Fields: <br />
-                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.Fields, null, 3)}</textarea>  <br />
+                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.content, null, 3)}</textarea>  <br />
                 Request <br />
-                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.Error, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.error, null, 3)}</textarea>
                 Response <br />
-                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.Error.xhr.response, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.error.xhr.response, null, 3)}</textarea>
                 `
             });
         });
 
-        this.repository.Events.OnContentDeleted.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentDeleted.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.Deleted,
-                Message: `'${c.ContentData.DisplayName}' has been ${c.Permanently ? 'deleted' : 'moved to trash'}.`,
-                BulkMessage: `{0} content has been ${c.Permanently ? 'deleted' : 'moved to trash'}`,
-                DialogHtml: `Content path: <i>${c.ContentData.Path}</i> </p> Content Data: <br /> <textarea style="width: 100%; height: 200px;" readonly>${JSON.stringify(c.ContentData, null, 3)}</textarea> `
+                Message: `'${c.contentData.Name}' has been ${c.permanently ? 'deleted' : 'moved to trash'}.`,
+                BulkMessage: `{0} content has been ${c.permanently ? 'deleted' : 'moved to trash'}`,
+                DialogHtml: `Content path: <i>${c.contentData.Path}</i> </p> Content Data: <br /> <textarea style="width: 100%; height: 200px;" readonly>${JSON.stringify(c.contentData, null, 3)}</textarea> `
             });
         });
 
-        this.repository.Events.OnContentDeleteFailed.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentDeleteFailed.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.DeleteFailed,
-                Message: this.tryGetErrorResponseMessage(c.Error) || `Failed to  ${c.Permanently ? 'delete' : 'move to trash'} '${c.Content.DisplayName || c.Content.Name}'`,
+                Message: this.tryGetErrorResponseMessage(c.error) || `Failed to  ${c.permanently ? 'delete' : 'move to trash'} '${c.content.Name}'`,
                 BulkMessage: `There was an error deleting {0} content`,
-                DialogHtml: `<br /> Content path: <i>${c.Content.Path}</i> </p>
+                DialogHtml: `<br /> Content path: <i>${c.content.Path}</i> </p>
                 Fields: <br />
-                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.Content.GetFields(), null, 3)}</textarea>  <br />
+                <textarea style="width: 100%; height: 50px;" readonly>${JSON.stringify(c.content, null, 3)}</textarea>  <br />
                 Request <br />
-                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.Error, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.error, null, 3)}</textarea>
                 Response <br />
-                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.Error.xhr.response, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 150px;" readonly>${JSON.stringify(c.error, null, 3)}</textarea>
                 `
             });
         });
 
-        this.repository.Events.OnContentMoved.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentMoved.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.Moved,
-                Message: `'${c.Content.DisplayName}' has been moved to '${c.To}'.`,
+                Message: `'${(c as any).content.DisplayName}' has been moved to '${c.content.Path}'.`,
                 BulkMessage: `{0} content has been moved.`,
-                DialogHtml: `Original Path: <i>${c.From}</i> <br /> Target: <i>${c.To}</i>`
+                DialogHtml: `<br /> Target: <i>${c.content.Path}</i>`
             });
         });
 
-        this.repository.Events.OnContentMoveFailed.subscribe((c) => {
-            this.InfosSubject.next({
+        this.eventHub.onContentMoveFailed.subscribe((c) => {
+            this.InfosSubject.setValue({
                 Type: SnackEventType.MoveFailed,
-                Message: this.tryGetErrorResponseMessage(c.Error) || `Failed to move '${c.Content.DisplayName || c.Content.Name}' from '${c.From}' to '${c.To}'`,
+                Message: this.tryGetErrorResponseMessage(c.error) || `Failed to move '${(c as any).content.DisplayName || c.content.Name}' to '${c.content.Path}'`,
                 BulkMessage: 'There was an error moving {0} content',
                 DialogHtml: `
-                Original path: <i>${c.From}</i> <br />
-                Target path: <i>${c.To}</i><br />
+                Target path: <i>${c.content.Path}</i><br />
                 Request <br />
-                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.Error, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.error, null, 3)}</textarea>
                 Response <br />
-                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.Error.xhr && c.Error.xhr.response, null, 3)}</textarea>
+                <textarea style="width: 100%; height: 130px;" readonly>${JSON.stringify(c.error.xhr, null, 3)}</textarea>
                 `
             });
         });
@@ -197,7 +199,10 @@ export class Snackbar {
             }
         });
 
-        this.InfosSubject.debounceTime(this.debounceTime).subscribe(() => {
+        this.InfosSubject
+            // ToDo...
+            // .debounceTime(this.debounceTime)
+            .subscribe(() => {
             this.ActualInfos = [];
             // this.MDCDialog.close();
             this.MDCSnackBar.getDefaultFoundation().cleanup_();

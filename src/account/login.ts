@@ -1,9 +1,9 @@
 import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { autoinject } from 'aurelia-framework';
 import { Router } from 'aurelia-router';
+import { Repository } from "@sensenet/client-core";
 import { ValidationController, ValidationControllerFactory, ValidationRules } from 'aurelia-validation';
-import { GoogleOauthProvider } from 'sn-client-auth-google';
-import { Repository } from 'sn-client-js';
+// import { GoogleOauthProvider } from 'sn-client-auth-google';
 
 @autoinject
 export class Login {
@@ -22,11 +22,11 @@ export class Login {
     private controller: ValidationController;
 
     constructor(
-        private snService: Repository.BaseRepository,
+        private snService: Repository,
         private router: Router,
         controllerFactory: ValidationControllerFactory,
     ) {
-        this.repositoryUrl = this.snService.Config.RepositoryUrl;
+        this.repositoryUrl = this.snService.configuration.repositoryUrl;
         this.controller = controllerFactory.createForCurrentScope();
         // ToDo
         // this.controller.addRenderer(new MterializeFormValidationRenderer())
@@ -53,19 +53,19 @@ export class Login {
 
     public async Login() {
         this.isLoginInProgress = true;
-        this.snService.Authentication.Login(this.userName, this.password)
-            .subscribe((success) => {
-                if (success) {
-                    this.router.navigate('/');
-                    this.error = '';
-                } else {
-                    this.isLoginInProgress = false;
-                    this.error = 'Error: failed to log in.';
-                }
-            }, (err) => {
-                this.error = err;
+        try {
+            const success = await this.snService.authentication.login(this.userName, this.password)
+            if (success) {
+                this.router.navigate('/');
+                this.error = '';
+            } else {
                 this.isLoginInProgress = false;
-            });
+                this.error = 'Error: failed to log in.';
+            }
+        } catch (error) {
+            this.error = error;
+            this.isLoginInProgress = false;
+        }
     }
 
     public attached() {
@@ -79,7 +79,7 @@ export class Login {
     public async googleAuthClick() {
         this.isLoginInProgress = true;
         try {
-            await this.snService.Authentication.GetOauthProvider(GoogleOauthProvider).Login();
+            await this.snService.authentication.getOauthProvider(GoogleOauthProvider).Login();
             this.router.navigate('/');
         } catch (error) {
             /** */

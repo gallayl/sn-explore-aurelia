@@ -1,16 +1,15 @@
-import { BaseRepository } from "sn-client-js/dist/src/Repository";
 import { autoinject } from "aurelia-framework";
-import { Authentication } from "sn-client-js";
+import { Repository, LoginState } from "@sensenet/client-core";
 
 //import {computedFrom} from 'aurelia-framework';
 
 @autoinject
 export class Welcome {
   isLoggedIn: boolean;
-  constructor(private readonly BaseRepository: BaseRepository) {
-    this.BaseRepository.Authentication.State.subscribe(state => {
-      this.isLoggedIn = state === Authentication.LoginState.Authenticated;
-    })
+  constructor(private readonly repository: Repository) {
+    this.repository.authentication.state.subscribe(state => {
+      this.isLoggedIn = state === LoginState.Authenticated;
+    }, true)
   }
 }
 

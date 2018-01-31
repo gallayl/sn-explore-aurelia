@@ -2,11 +2,13 @@ import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { autoinject, bindable, computedFrom } from "aurelia-framework";
 import { Router } from "aurelia-router";
 import { BinaryTextEditor } from "explore/binary-text-editor";
-import { Subscription } from "rxjs/subscription";
-import { ActionName, Content, ContentTypes, Query, Repository, SavedContent } from "sn-client-js";
-import { ActionModel } from "sn-client-js/dist/src/Repository";
-import { CollectionView, DeleteContent, SetPermissionsDialog } from "sn-controls-aurelia";
-import { AddContentDialog, EditContentDialog } from "sn-controls-aurelia";
+import { SetPermissionsDialog, AddContentDialog, EditContentDialog, DeleteContent, CollectionView} from "@sensenet/controls-aurelia";
+import { IContent, Repository, IActionModel } from '@sensenet/client-core';
+import { ActionName } from '@sensenet/control-mapper';
+import { GenericContent } from '@sensenet/default-content-types';
+import { Query } from '@sensenet/query';
+import { EventHub } from '@sensenet/repository-events';
+import { IDisposable } from '@sensenet/client-utils/dist/Disposable';
 
 @autoinject
 export class Index {
@@ -15,13 +17,13 @@ export class Index {
     public searchBar: HTMLInputElement;
 
     @bindable
-    public RootContent: Content;
+    public RootContent: IContent;
 
     @bindable
-    public Scope: Content;
+    public Scope: IContent;
 
     @bindable
-    public AllowedChildTypes: Array<{ new(...args): Content }> = [];
+    public AllowedChildTypes: Array<{ new(...args): IContent }> = [];
 
     @bindable
     public actionName: ActionName = 'view';
@@ -36,10 +38,8 @@ export class Index {
 
     public deleteContentComponent: DeleteContent;
 
-    public Subscriptions: Subscription[] = [];
-
     @bindable
-    public ViewType: CollectionView = localStorage.getItem('sn-explore-viewtype') || 'List';
+    public ViewType: CollectionView = localStorage.getItem('sn-explore-viewtype') as any || 'List';
 
     public ViewTypeChanged() {
         localStorage.setItem('sn-explore-viewtype', this.ViewType);
@@ -48,12 +48,12 @@ export class Index {
     @bindable
     public IsDrawerOpened: boolean = true;
 
-    public Select(content: Content) {
+    public async Select(content: GenericContent) {
         if (content.IsFolder) {
             if (this.Scope.Id === content.Id) {
-                this.snService.Load(content.ParentId).subscribe((p) => {
-                    this.Scope = p;
-                });
+                this.Scope = (await this.snService.load({
+                    idOrPath: content.ParentId,
+                })).d;
             } else {
                 this.Scope = content;
             }
@@ -66,21 +66,17 @@ export class Index {
         this.ViewType = newType;
     }
 
-    public clearSubscriptions() {
-        this.Subscriptions.forEach((subscription) => {
-            subscription.unsubscribe();
-        });
-        this.Subscriptions = [];
-    }
 
-    public GetSelectedChildren(scope: SavedContent, q?: Query): Promise<Content[]> {
-        return new Promise((resolve, reject) => scope.Children({
-            select: ['Icon', 'ParentId', 'Actions', 'IsFolder'],
-            expand: ['Actions'],
-            query: q && q.toString(),
-            orderby: ['IsFolder desc', 'DisplayName asc'],
-            // scenario: 'ListItem'
-        }).subscribe(resolve, reject));
+    public async GetSelectedChildren(scope: GenericContent, q?: Query<IContent>): Promise<IContent[]> {
+        const collection = await this.snService.loadCollection<any>({
+            path: scope.Path,
+            oDataOptions: {            
+                select: ['Icon', 'ParentId', 'Actions', 'IsFolder'],
+                expand: ['Actions'],
+                query: q && q.toString(),
+                orderby: ['IsFolder desc', 'DisplayName asc'],}
+        });
+        return collection.d.results;
     }
 
     public toggleExploreDrawer() {
@@ -92,42 +88,49 @@ export class Index {
     }
 
     public detached() {
-        this.clearSubscriptions();
+        this.contentMoveSubscription.dispose();
+        this.eventHub.dispose;
     }
+    private eventHub: EventHub;
 
-    constructor(private snService: Repository.BaseRepository,
+    constructor(private snService: Repository,
                 private router: Router
             ) {
+                this.eventHub = new EventHub(this.snService);
     }
 
-    public activate(params) {
+    public async activate(params) {
         if (params.path) {
             this.changePath(params.path);
         }
-        this.snService.Load('/Root', {
+        this.RootContent = (await this.snService.load({
+            idOrPath: '/Root',
+            oDataOptions: {
             select: 'all',
-        }).subscribe((root) => {
-            this.RootContent = root;
-        });
+            }
+        })).d;
     }
 
+    private contentMoveSubscription: IDisposable;
     public ScopeChanged() {
-        this.clearSubscriptions();
-
+        this.contentMoveSubscription.dispose();
         this.router.navigateToRoute('explore', { path: this.Scope.Path }, { replace: true });
-        this.Scope.GetRepository().Events.OnContentMoved.subscribe((m) => {
-            this.router.navigateToRoute('explore', { path: m.Content.Path }, { replace: true });
-        });
+        this.contentMoveSubscription = this.eventHub.onContentMoved.subscribe((m)=>{
+            this.router.navigateToRoute('explore', { path: m.content.Path }, { replace: true });
+        })
     }
 
     @bindable
-    public EditedContent: Content;
-    public EditItem(content: Content) {
+    public EditedContent: IContent;
+    public EditItem(content: IContent) {
         this.editContentDialog.open(content);
     }
     public changePath(path: string) {
-        this.snService.Load(path, { select: 'all' }).subscribe((selection) => {
-            this.Scope = selection;
+        this.snService.load({
+            idOrPath: path,
+            oDataOptions: { select: 'all' }
+        }).then((selection) => {
+            this.Scope = selection.d;
         });
     }
 
@@ -139,34 +142,47 @@ export class Index {
         this.addContentDialog.open();
     }
 
-    public ContentDropped(content: Content) {
-        content.MoveTo(this.Scope.Path);
+    public ContentDropped(content: IContent) {
+        this.snService.move({
+            targetPath: this.Scope.Path,
+            idOrPath: content.Id,
+        })
     }
 
-    public ContentListDropped(contentList: SavedContent[]) {
-        this.Scope.GetRepository().MoveBatch(contentList, this.Scope.Path);
+    public ContentListDropped(contentList: IContent[]) {
+        this.snService.move({
+            targetPath: this.Scope.Path,
+            idOrPath: contentList.map(c=>c.Id),
+        })        
     }
 
-    public ContentDroppedOnItem(content: Content, item: Content) {
-        content.MoveTo(item.Path);
+    public ContentDroppedOnItem(content: IContent, item: IContent) {
+        this.snService.move({
+            targetPath: item.Path,
+            idOrPath: content.Id,
+        })
     }
 
-    public ContentListDroppedOnItem(contentList: SavedContent[], item: Content) {
-        this.Scope.GetRepository().MoveBatch(contentList, item.Path);
+    public ContentListDroppedOnItem(contentList: IContent[], item: IContent) {
+        this.snService.move({
+            targetPath: item.Path,
+            idOrPath: contentList.map(c=>c.Id),
+        })        
     }
 
-    public async FilesDropped(event: DragEvent) {
-        await this.Scope.UploadFromDropEvent({
-            ContentType: ContentTypes.File as any,
-            CreateFolders: true,
-            Event: event,
-            Overwrite: false,
-            PropertyName: 'Binary',
-        });
+    public async FilesDropped(_event: DragEvent) {
+        // ToDo: Upload me....
+        // await this.Scope.UploadFromDropEvent({
+        //     ContentType: ContentTypes.File as any,
+        //     CreateFolders: true,
+        //     Event: event,
+        //     Overwrite: false,
+        //     PropertyName: 'Binary',
+        // });
     }
 
     @bindable
-    public SelectedContent: SavedContent[];
+    public SelectedContent: IContent[];
 
     @bindable
     public ShowDeleteSelected: boolean = false;
@@ -188,10 +204,10 @@ export class Index {
     public queryString = '';
 
     @computedFrom('queryString', 'searchEnabled')
-    public get query(): Query | undefined {
+    public get query(): Query<IContent> | undefined {
         const searchString = `${this.queryString}*`;
         return this.queryString && this.searchEnabled && new Query((q) =>
-            q.InTree(this.Scope.Path).And.Equals('_Text', searchString).Or.Equals('DisplayName', searchString).Or.Equals('Name', searchString)
+            q.inTree(this.Scope.Path).and.equals('_Text', searchString).or.equals('DisplayName', searchString).or.equals('Name', searchString)
         );
     }
 
@@ -208,13 +224,13 @@ export class Index {
         /** */
     }
 
-    public getActions(content: Content<ContentTypes.GenericContent>): ActionModel[] {
+    public getActions(content: GenericContent): IActionModel[] {
 
-        return (content.Actions as any as ActionModel[]).filter((a) => {
+        return ((content as any).Actions as IActionModel[]).filter((a) => {
                 return ['Delete', 'SetPermissions', 'Edit', 'BinarySpecial'].indexOf(a.Name) > -1;
             });
     }
-    public onAction(content: Content, action: ActionModel) {
+    public onAction(content: IContent, action: IActionModel) {
         switch (action.Name) {
             case 'Delete':
                 this.deleteContentComponent.open([content]);
@@ -223,14 +239,14 @@ export class Index {
                 this.setPermissionsDialog.open(content);
                 break;
             case 'Edit':
-                if (content.GetSchemaWithParents().filter((t) => t.ContentTypeName === 'ContentType').length) {
-                    this.binaryTextEditor.open(content);
+                if (content.Type === "ContentType"){
+                    this.binaryTextEditor.open(this.snService, content as any);
                 } else {
                     this.EditItem(content);
                 }
                 break;
             case 'BinarySpecial':
-                this.binaryTextEditor.open(content);
+                this.binaryTextEditor.open(this.snService, content as any);
                 break;
             default:
                 // console.log(content, action);

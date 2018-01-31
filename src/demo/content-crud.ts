@@ -1,27 +1,28 @@
-import { ContentTypes, Mocks, Content, ActionName } from 'sn-client-js';
-import { bindable } from 'aurelia-templating';
+import { bindable, autoinject } from 'aurelia-framework';
+import { Repository, IContent } from '@sensenet/client-core';
+import { ActionName } from '@sensenet/control-mapper';
 
+@autoinject
 export class ContentCrud {
     
     @bindable
-    content: Content;
-    repo: Mocks.MockRepository;
+    content: IContent;
 
     @bindable
-    contents: Content[];
+    contents: IContent[];
 
     @bindable actionName: ActionName;
 
-    constructor() {
-        this.repo = new Mocks.MockRepository();
+    constructor(private repository: Repository) {
         const createdContents = [];
-        for (const contentType in ContentTypes){
+        for (const contentType in this.repository.schemas["schemas"].map(s=>s.Name)){
             try {
-                const content = this.repo.HandleLoadedContent({
+                const content = {
                     Id: Math.random(),
                     Path: 'example/demo',
-                    Name: `${contentType} example`
-                }, ContentTypes[contentType]);
+                    Name: `${contentType} example`,
+                    Type: contentType
+                } as IContent;
 
                 createdContents.push(content);
             } catch (error) {

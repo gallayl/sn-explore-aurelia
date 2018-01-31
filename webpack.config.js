@@ -36,16 +36,14 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   entry: {
     app: ['aurelia-bootstrapper'],
     vendor: [
-      'bluebird',
       'jquery',
-      'rxjs',
       'lodash.groupby',
+      'moment',
       'moment-timezone',
-      'material-components-web',
       'aurelia-binding',
       'aurelia-templating',
-      'quill',
-      'sn-client-js'
+      '@sensenet/controls-aurelia',
+      'material-components-web/dist/material-components-web'
     ],
 
   },
@@ -92,8 +90,6 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
       { test: /\.html$/i, loader: 'html-loader' },
       { test: /\.ts$/i, loader: 'awesome-typescript-loader', exclude: nodeModulesDir },
       { test: /\.json$/i, loader: 'json-loader' },
-      // use Bluebird as the global Promise implementation:
-      { test: /[\/\\]node_modules[\/\\]bluebird[\/\\].+\.js$/, loader: 'expose-loader?Promise' },
       // exposes jQuery globally as $ and as jQuery:
       { test: require.resolve('jquery'), loader: 'expose-loader?$!expose-loader?jQuery' },
       // embed small images and fonts as Data Urls and larger ones as files:
@@ -112,14 +108,11 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
   plugins: [
     new AureliaPlugin(),
     new ModuleDependenciesPlugin({
-      "sn-controls-aurelia": [
+      "@sensenet/controls-aurelia": [
         './attributes/ContentDragCustomAttribute',
         './attributes/ContentDropCustomAttribute',
         './attributes/SettingsValidationCustomAttribute'
       ]
-    }),
-    new ProvidePlugin({
-      'Promise': 'bluebird'
     }),
     new TsConfigPathsPlugin(),
     new CheckerPlugin(),
@@ -151,37 +144,37 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
       name: 'vendor',
     }),
     
-  //   new BundleAnalyzerPlugin({
-  //     // Can be `server`, `static` or `disabled`. 
-  //     // In `server` mode analyzer will start HTTP server to show bundle report. 
-  //     // In `static` mode single HTML file with bundle report will be generated. 
-  //     // In `disabled` mode you can use this plugin to just generate Webpack Stats JSON file by setting `generateStatsFile` to `true`. 
-  //     analyzerMode: 'server',
-  //     // Host that will be used in `server` mode to start HTTP server. 
-  //     analyzerHost: '127.0.0.1',
-  //     // Port that will be used in `server` mode to start HTTP server. 
-  //     analyzerPort: 8888,
-  //     // Path to bundle report file that will be generated in `static` mode. 
-  //     // Relative to bundles output directory. 
-  //     reportFilename: 'report.html',
-  //     // Module sizes to show in report by default. 
-  //     // Should be one of `stat`, `parsed` or `gzip`. 
-  //     // See "Definitions" section for more information. 
-  //     defaultSizes: 'parsed',
-  //     // Automatically open report in default browser 
-  //     openAnalyzer: true,
-  //     // If `true`, Webpack Stats JSON file will be generated in bundles output directory 
-  //     generateStatsFile: false,
-  //     // Name of Webpack Stats JSON file that will be generated if `generateStatsFile` is `true`. 
-  //     // Relative to bundles output directory. 
-  //     statsFilename: 'stats.json',
-  //     // Options for `stats.toJson()` method. 
-  //     // For example you can exclude sources of your modules from stats file with `source: false` option. 
-  //     // See more options here: https://github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21 
-  //     statsOptions: null,
-  //     // Log level. Can be 'info', 'warn', 'error' or 'silent'. 
-  //     logLevel: 'info'
-  //   })
+    new BundleAnalyzerPlugin({
+      // Can be `server`, `static` or `disabled`. 
+      // In `server` mode analyzer will start HTTP server to show bundle report. 
+      // In `static` mode single HTML file with bundle report will be generated. 
+      // In `disabled` mode you can use this plugin to just generate Webpack Stats JSON file by setting `generateStatsFile` to `true`. 
+      analyzerMode: 'server',
+      // Host that will be used in `server` mode to start HTTP server. 
+      analyzerHost: '127.0.0.1',
+      // Port that will be used in `server` mode to start HTTP server. 
+      analyzerPort: 8888,
+      // Path to bundle report file that will be generated in `static` mode. 
+      // Relative to bundles output directory. 
+      reportFilename: 'report.html',
+      // Module sizes to show in report by default. 
+      // Should be one of `stat`, `parsed` or `gzip`. 
+      // See "Definitions" section for more information. 
+      defaultSizes: 'parsed',
+      // Automatically open report in default browser 
+      openAnalyzer: true,
+      // If `true`, Webpack Stats JSON file will be generated in bundles output directory 
+      generateStatsFile: false,
+      // Name of Webpack Stats JSON file that will be generated if `generateStatsFile` is `true`. 
+      // Relative to bundles output directory. 
+      statsFilename: 'stats.json',
+      // Options for `stats.toJson()` method. 
+      // For example you can exclude sources of your modules from stats file with `source: false` option. 
+      // See more options here: https://github.com/webpack/webpack/blob/webpack-1/lib/Stats.js#L21 
+      statsOptions: null,
+      // Log level. Can be 'info', 'warn', 'error' or 'silent'. 
+      logLevel: 'info'
+    })
   ],
   
 })

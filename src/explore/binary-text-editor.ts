@@ -3,8 +3,10 @@
 
 import { bindable, computedFrom, customElement } from 'aurelia-framework';
 import { dialog } from 'material-components-web/dist/material-components-web';
-import { BinaryField, Content, ContentTypes } from 'sn-client-js';
 import { SensenetCtdLanguage } from 'utils/monaco-languages/sensenet-ctd';
+import {File as SnFile, BinaryField} from "@sensenet/default-content-types";
+import { Repository } from '@sensenet/client-core';
+import { PathHelper } from '@sensenet/client-utils';
 
 @customElement('binary-text-editor')
 export class BinaryTextEditor {
@@ -55,25 +57,21 @@ export class BinaryTextEditor {
     }
 
     @bindable
-    public content: Content<ContentTypes.File>;
+    public content: SnFile;
 
     @bindable
     public fieldName: string;
 
     @computedFrom('content', 'fieldName')
-    public get field(): BinaryField<Content> {
-        const f = this.content[this.fieldName];
-        if (!(f instanceof BinaryField)) {
-            throw Error(`Field '${this.fieldName}' is not a binary field on content`);
-        }
-        return this.content[this.fieldName] as BinaryField<Content>;
+    public get field(): BinaryField {
+        return this.content[this.fieldName] as BinaryField;
     }
 
     @bindable
     public binaryData: any;
 
-    public explicitSetupForContent(content: Content<ContentTypes.File>): boolean {
-        const schemas = content.GetSchemaWithParents().map((s) => s.ContentTypeName);
+    public explicitSetupForContent(repo: Repository, content: SnFile): boolean {
+        const schemas = repo.schemas.getSchemaByName(content.Type).ContentTypeName;// content.GetSchemaWithParents().map((s) => s.ContentTypeName);
         if (schemas.indexOf('ContentType') > -1) {
             SensenetCtdLanguage.Register();
             monaco.editor.setModelLanguage(this.monacoEditorInstance.getModel(), SensenetCtdLanguage.LanguageId);
@@ -86,16 +84,26 @@ export class BinaryTextEditor {
 
     }
 
-    public async open<T extends Content<ContentTypes.File>>(content: T, fieldName: keyof T = 'Binary') {
+    public async open<T extends SnFile>(repo: Repository, content: T, fieldName: keyof T = 'Binary') {
         this.isLoading = true;
         this.content = content;
         this.fieldName = fieldName;
         this.editBinaryMDCDialog.show();
 
-        this.binaryData = await this.content.GetRepository().Ajax(this.field.GetDownloadUrl(), 'GET', String, {}, [], false, 'text').toPromise();
+        const downloadRequest = await repo.fetch(PathHelper.joinPaths(repo.configuration.repositoryUrl,
+            `/binaryhandler.ashx?nodeid=${content.Id}&propertyname=${fieldName}`));
+
+        if (downloadRequest.ok) {
+            // ToDo: Check me pls
+            this.binaryData = await downloadRequest.text();
+
+        } else {
+            throw Error("Failed to download binary");
+        }
+        // await this.content.GetRepository().Ajax(this.field.GetDownloadUrl(), 'GET', String, {}, [], false, 'text').toPromise();
         this.monacoEditorInstance.setValue(this.binaryData);
 
-        if (!this.explicitSetupForContent(content)) {
+        if (!this.explicitSetupForContent(repo, content)) {
             const languages: monaco.languages.ILanguageExtensionPoint[] = monaco.languages.getLanguages();
             const available = languages.filter((lang) => {
                 return lang.extensions.filter((e) => content.Name.endsWith(e)).length;
@@ -119,7 +127,8 @@ export class BinaryTextEditor {
     }
 
     public async save() {
-        await this.field.SaveBinaryText(this.monacoEditorInstance.getValue()).toPromise();
+        // ToDo: Upload me pls!!!
+        // await this.field.SaveBinaryText(this.monacoEditorInstance.getValue()).toPromise();
         this.editBinaryMDCDialog.close();
     }
 }

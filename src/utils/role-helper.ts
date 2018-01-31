@@ -1,8 +1,8 @@
 import { autoinject } from "aurelia-framework";
-import { Observable } from "rxjs/Observable";
-import { ReplaySubject } from "rxjs/ReplaySubject";
-import { Repository } from "sn-client-js";
-import { Group } from "sn-client-js/dist/src/Content/DefaultContentTypes";
+import { Group } from "@sensenet/default-content-types";
+import { ObservableValue } from "@sensenet/client-utils";
+import { Repository } from "@sensenet/client-core";
+import { ConstantContent } from "@sensenet/client-core/dist/Repository/ConstantContent";
 
 export enum Role {
     IsGlobalAdministratorUser = 'IsGlobalAdministratorUser',
@@ -15,6 +15,8 @@ export enum Role {
 export class RoleHelper {
     private groups: Group[] = [];
     private roles: Map<Role, boolean> = new Map();
+
+    OnRolesChanged: ObservableValue<void> = new ObservableValue();
 
     private async evaluateIsExploreUser() {
         try {
@@ -46,8 +48,6 @@ export class RoleHelper {
 
     public async IsInRole(role: Role): Promise<boolean> {
 
-        await this.OnRolesChanged.first().toPromise();
-
         if (this.roles.has(role)) {
             return this.roles.get(role) || false;
         } else {
@@ -62,26 +62,18 @@ export class RoleHelper {
         }
     }
 
-    private rolesChangedSubject: ReplaySubject<void> = new ReplaySubject(1);
-    private TriggerRolesChanged() {
-        this.rolesChangedSubject.next(null);
-    }
+    constructor(private repo: Repository) {
 
-    public get OnRolesChanged(): Observable<void> {
-        return this.rolesChangedSubject.asObservable();
-    }
-
-    constructor(private repo: Repository.BaseRepository) {
-
-        repo.GetCurrentUser().subscribe(async (u) => {
+        repo.authentication.currentUser.subscribe(async (u) => {
+            this.OnRolesChanged.setValue(Math.random() as any);            
             this.roles.clear();
             // tslint:disable-next-line:no-string-literal
-            const isVisitor = u.Id === this.repo['_staticContent'].VisitorUser.Id;
-
+            const isVisitor = u.Id === ConstantContent.VISITOR_USER.Id;
             this.groups = [];
             if (!isVisitor) {
                 try {
-                    this.groups = await u.GetParentGroups(false).map((r) => (r as any).d.results as Group[]).toPromise<Group[]>();
+                    const g: any = await this.repo.security.getParentGroups(u.Id, false);
+                    this.groups = g.d.results as Group[];
                 } catch (error) {
                     // tslint:disable-next-line:no-console
                     console.warn('Error fetching groups for user. Check "GetParentGroups" action permission settings');
@@ -90,10 +82,6 @@ export class RoleHelper {
 
             this.roles.set(Role.IsLoggedIn, !isVisitor);
             this.roles.set(Role.IsVisitor, isVisitor);
-
-            // console.log('User changed: ', u);
-            // console.log('Roles resetted. ');
-            this.TriggerRolesChanged();
         });
     }
 }

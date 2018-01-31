@@ -193,7 +193,7 @@ export function getXsdCompletionProvider(schemaString: string): monaco.languages
                 return currentItem ? getAvailableAttribute(currentItem, usedAttributes) : [];
             } else {
                 // get elements completions
-                return currentItem ? getAvailableElements(currentItem, usedItems) : [];
+                return currentItem ? getAvailableElements(currentItem) : [];
             }
         },
 

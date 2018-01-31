@@ -5,13 +5,9 @@ import '../static/styles.css';
 
 import { Aurelia } from 'aurelia-framework';
 import { PLATFORM } from 'aurelia-pal';
-import * as Bluebird from 'bluebird';
 
-import { AddGoogleAuth } from 'sn-client-auth-google';
-import { BaseRepository, SnRepository } from 'sn-client-js/dist/src/Repository';
-
-// remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
-Bluebird.config({ warnings: { wForgottenReturn: false } });
+import { Repository } from '@sensenet/client-core';
+import { JwtService } from "@sensenet/authentication-jwt"
 
 export async function configure(aurelia: Aurelia) {
   aurelia.use
@@ -19,7 +15,7 @@ export async function configure(aurelia: Aurelia) {
     .developmentLogging()
     .feature(PLATFORM.moduleName('components/index'))
     .plugin(PLATFORM.moduleName('aurelia-validation'))
-    .plugin(PLATFORM.moduleName('sn-controls-aurelia'));
+    .plugin(PLATFORM.moduleName('@sensenet/controls-aurelia'));
 
   // Uncomment the line below to enable animation.
   aurelia.use.plugin(PLATFORM.moduleName('aurelia-animator-css'));
@@ -28,15 +24,18 @@ export async function configure(aurelia: Aurelia) {
   // Anyone wanting to use HTMLImports to load views, will need to install the following plugin.
   // aurelia.use.plugin(PLATFORM.moduleName('aurelia-html-import-template-loader'));
 
-  aurelia.container.registerSingleton(BaseRepository, () => {
-    const repo = new SnRepository(
+  aurelia.container.registerSingleton(Repository, () => {
+    const repo = new Repository(
       {
-        JwtTokenPersist: 'expiration',
-        RepositoryUrl: 'https://dmsservice.demo.sensenet.com',
+        sessionLifetime: 'expiration',
+        repositoryUrl: 'https://dmsservice.demo.sensenet.com',
       });
-    AddGoogleAuth(repo, {
-      ClientId: '590484552404-d6motta5d9qeh0ln81in80fn6mqf608e.apps.googleusercontent.com',
-    });
+      const auth = new JwtService(repo);
+      repo.authentication = auth;
+    // ToDo
+    // AddGoogleAuth(repo, {
+    //   ClientId: '590484552404-d6motta5d9qeh0ln81in80fn6mqf608e.apps.googleusercontent.com',
+    // });
 
     return repo;
   });

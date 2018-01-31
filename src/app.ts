@@ -48,8 +48,8 @@ export class App {
   public attached() {
     this.updateTheme();
 
-    this.roleHelper.OnRolesChanged.subscribe(() => {
-      this.router.routes.forEach(async (route) => {
+    this.roleHelper.OnRolesChanged.subscribe(async () => {
+      for (const route of this.router.routes) {
         route.settings.show = true;
         for (const role of route.settings.roles) {
           const isInRole = await this.roleHelper.IsInRole(role);
@@ -57,7 +57,8 @@ export class App {
             route.settings.show = false;
           }
         }
-      });
+      }
+      // this.router.refreshNavigation();
     });
     // tslint:disable-next-line:no-unused-expression
     new MDCToolbar(this.toolbarRef);
@@ -71,16 +72,14 @@ class SnClientAuthorizeStep implements PipelineStep {
 
   public async run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     const instructions = navigationInstruction.getAllInstructions();
-    return new Promise(async (resolve) => {
       for (const role in Role) {
         if (instructions.some((i) => i.config.settings.roles.indexOf(role) !== -1)) {
           const isInRole = await this.roleHelper.IsInRole(role as Role);
           if (!isInRole) {
-            return resolve(next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : '')));
+            return next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : ''));
           }
         }
       }
-      return resolve(next());
-    });
+      return next();
   }
 }

@@ -1,32 +1,35 @@
 import { autoinject } from 'aurelia-framework';
-import { Repository } from "sn-client-js";
+import { Repository } from '@sensenet/client-core';
+import { EventHub } from '@sensenet/repository-events';
 
 // tslint:disable:no-console
 
 @autoinject
 export class ContentLogger {
 
-    constructor(private repo: Repository.BaseRepository) {
+    private eventHub: EventHub;
+    constructor(repo: Repository) {
+        this.eventHub = new EventHub(repo);
 
-        this.repo.Events.OnContentLoaded.subscribe(() => {
+        this.eventHub.onContentLoaded.subscribe(() => {
             // console.log('OnContentLoaded', p);
         });
 
-        this.repo.Events.OnContentCreated.subscribe((mod) => {
+        this.eventHub.onContentCreated.subscribe((mod) => {
             console.log("OnContentCreated", mod);
         });
-        this.repo.Events.OnContentCreateFailed.subscribe((mod) => {
+        this.eventHub.onContentCreateFailed.subscribe((mod) => {
             console.log("OnContentCreateFailed", mod);
         });
 
-        this.repo.Events.OnContentModified.subscribe((mod) => {
+        this.eventHub.onContentModified.subscribe((mod) => {
             console.log("OnContentModified", mod);
         });
-        this.repo.Events.OnContentModificationFailed.subscribe((mod) => {
+        this.eventHub.onContentModificationFailed.subscribe((mod) => {
             console.log("OnContentModificationFailed", mod);
         });
 
-        this.repo.Events.OnContentDeleted.subscribe((del) => {
+        this.eventHub.onContentDeleted.subscribe((del) => {
             console.log("OnContentDeleted", del);
         });
     }
