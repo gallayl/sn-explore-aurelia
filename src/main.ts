@@ -13,7 +13,7 @@ import { addGoogleAuth, GoogleOauthProvider } from '@sensenet/authentication-goo
 const repo = new Repository(
   {
     sessionLifetime: 'expiration',
-    repositoryUrl: 'https://dmsservice.demo.sensenet.com',
+    repositoryUrl: 'https://sensenet7-local', // 'https://dmsservice.demo.sensenet.com',
   });
 
 const jwtService = new JwtService(repo);

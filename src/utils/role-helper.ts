@@ -3,6 +3,7 @@ import { Group } from "@sensenet/default-content-types";
 import { ObservableValue, Retrier } from "@sensenet/client-utils";
 import { Repository } from "@sensenet/client-core";
 import { ConstantContent } from "@sensenet/client-core/dist/Repository/ConstantContent";
+import { JwtService } from "@sensenet/authentication-jwt/dist/JwtService";
 
 export enum Role {
     IsGlobalAdministratorUser = 'IsGlobalAdministratorUser',
@@ -48,7 +49,7 @@ export class RoleHelper {
 
     private isInitialized = false;
     public async IsInRole(role: Role): Promise<boolean> {
-        await Retrier.Create(async ()=>this.isInitialized)
+        await Retrier.Create(async () => this.isInitialized)
             .Setup({
                 RetryIntervalMs: 10,
                 Retries: 100000,
@@ -70,9 +71,13 @@ export class RoleHelper {
         }
     }
 
-    constructor(private repo: Repository) {
-
-        repo.authentication.currentUser.subscribe(async (u) => {
+    private async init(){
+        await this.jwt.checkForUpdate();
+        this.jwt.currentUser.subscribe(async (u) => {
+            if (!u){
+                return;
+            }
+            console.log("User changed, ", u);
             this.isInitialized = false;
             this.roles.clear();
             // tslint:disable-next-line:no-string-literal
@@ -92,6 +97,10 @@ export class RoleHelper {
             this.roles.set(Role.IsVisitor, isVisitor);
             this.OnRolesChanged.setValue(Math.random());
             this.isInitialized = true;
-        });
+        }, true);      
+    }
+
+    constructor(private repo: Repository, private jwt: JwtService) {
+        this.init();
     }
 }

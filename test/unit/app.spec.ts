@@ -1,6 +1,7 @@
 import { App } from 'app';
 import { RoleHelper } from 'utils/role-helper';
 import { Repository } from '@sensenet/client-core';
+import { JwtService } from '@sensenet/authentication-jwt/dist/JwtService';
 
 class RouterStub {
   public routes;
@@ -21,7 +22,7 @@ describe('the App module', () => {
   beforeEach(() => {
     mockedRouter = new RouterStub();
     const mockRepo = new Repository();
-    sut = new App(new RoleHelper(mockRepo));
+    sut = new App(new RoleHelper(mockRepo, new JwtService(mockRepo)));
     sut.configureRouter(mockedRouter, mockedRouter);
   });
 

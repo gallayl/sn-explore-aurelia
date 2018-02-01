@@ -72,14 +72,14 @@ class SnClientAuthorizeStep implements PipelineStep {
 
   public async run(navigationInstruction: NavigationInstruction, next: Next): Promise<any> {
     const instructions = navigationInstruction.getAllInstructions();
-      for (const role in Role) {
-        if (instructions.some((i) => i.config.settings.roles.indexOf(role) !== -1)) {
-          const isInRole = await this.roleHelper.IsInRole(role as Role);
-          if (!isInRole) {
-            return next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : ''));
-          }
+    for (const role in Role) {
+      if (instructions.some((i) => i.config.settings.roles.indexOf(role) !== -1)) {
+        const isInRole = await this.roleHelper.IsInRole(role as Role);
+        if (!isInRole) {
+          return next.cancel(new Redirect(role === Role.IsLoggedIn ? 'login' : ''));
         }
       }
-      return next();
+    }
+    return next();
   }
 }
