@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "start": "nps",
-    "build": "nps build development",
+    "build": "nps webpack.build.development",
     "test": "nps test",
     "commit": "git-cz"
   },
