@@ -112,7 +112,7 @@
   "dependencies": {
     "@sensenet/authentication-google": "^1.0.0-development.4",
     "@sensenet/authentication-jwt": "^1.0.0-development.4",
-    "@sensenet/controls-aurelia": "^1.0.0-development.1",
+    "@sensenet/controls-aurelia": "^1.0.0-development.2",
     "@types/lodash": "^4.14.99",
     "@types/quill": "^1.3.5",
     "aurelia-animator-css": "^1.0.3",
