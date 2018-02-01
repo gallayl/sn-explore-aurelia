@@ -120,10 +120,7 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
     new CheckerPlugin(),
     new HtmlWebpackPlugin({
       template: 'index.ejs',
-      minify: production ? {
-        removeComments: true,
-        collapseWhitespace: true
-      } : undefined,
+      minify: undefined,
       metadata: {
         // available in index.ejs //
         title, server, baseUrl
