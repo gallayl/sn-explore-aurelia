@@ -29,7 +29,7 @@
                                     <div class="mdc-text-field__bottom-line"></div>
                                 </label>
                             </div>
-                            <a if.bind="ShowDeleteSelected" click.delegate="DeleteSelected()" class="material-icons mdc-toolbar__icon--menu">delete</a>
+                            <a if.bind="showDeleteSelected" click.delegate="DeleteSelected()" class="material-icons mdc-toolbar__icon--menu">delete</a>
                             <a click.delegate="toggleExploreDrawer()" class="material-icons mdc-toolbar__icon--menu">menu</a>
                             <a click.delegate="setViewType('List')" class="material-icons mdc-toolbar__icon--menu">list</a>
                             <a click.delegate="setViewType('Details')" class="material-icons mdc-toolbar__icon--menu">view_module</a>
@@ -49,7 +49,7 @@
                             on-drop-content-list-on-item.call="ContentListDroppedOnItem(contentList, item)"
                             view-type.bind="ViewType"
                             query.bind='query'
-                            selection.two-way="SelectedContent"
+                            selection.two-way="selectedContent"
                             on-action.call="onAction(content,action)"></content-list>
                 </div>
             </main>

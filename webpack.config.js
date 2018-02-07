@@ -134,7 +134,7 @@ module.exports = ({production, server, extractCss, coverage} = {}) => ({
           from: 'node_modules/monaco-editor/min/vs',
           to: 'vs',
       }
-  ]),
+    ]),
     ...when(extractCss, new ExtractTextPlugin({
       filename: production ? '[contenthash].css' : '[id].css',
       allChunks: true,

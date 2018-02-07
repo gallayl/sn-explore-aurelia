@@ -3,9 +3,9 @@ import { autoinject, bindable, computedFrom } from "aurelia-framework";
 import { Router } from "aurelia-router";
 import { BinaryTextEditor } from "explore/binary-text-editor";
 import { SetPermissionsDialog, AddContentDialog, EditContentDialog, DeleteContent, CollectionView} from "@sensenet/controls-aurelia";
-import { IContent, Repository, IActionModel } from '@sensenet/client-core';
+import { IContent, Repository, Upload } from '@sensenet/client-core';
 import { ActionName } from '@sensenet/control-mapper';
-import { GenericContent } from '@sensenet/default-content-types';
+import { GenericContent, IActionModel } from '@sensenet/default-content-types';
 import { Query } from '@sensenet/query';
 import { EventHub } from '@sensenet/repository-events';
 import { IDisposable } from '@sensenet/client-utils/dist/Disposable';
@@ -171,31 +171,32 @@ export class Index {
     }
 
     public async FilesDropped(_event: DragEvent) {
-        // ToDo: Upload me....
-        // await this.Scope.UploadFromDropEvent({
-        //     ContentType: ContentTypes.File as any,
-        //     CreateFolders: true,
-        //     Event: event,
-        //     Overwrite: false,
-        //     PropertyName: 'Binary',
-        // });
+        await Upload.fromDropEvent({
+            event: _event,
+            contentTypeName: "File",
+            parentPath: this.scope.Path,
+            createFolders: true,
+            repository: this.snService,
+            binaryPropertyName: "Binary",
+            overwrite: true,
+        })
     }
 
     @bindable
-    public SelectedContent: IContent[];
+    public selectedContent: IContent[];
 
     @bindable
-    public ShowDeleteSelected: boolean = false;
+    public showDeleteSelected: boolean = false;
 
     public DeleteSelected() {
-        this.deleteContentComponent.open(this.SelectedContent);
+        this.deleteContentComponent.open(this.selectedContent);
     }
 
     public selectedContentChanged() {
-        if (this.SelectedContent.length) {
-            this.ShowDeleteSelected = true;
+        if (this.selectedContent.length) {
+            this.showDeleteSelected = true;
         } else {
-            this.ShowDeleteSelected = false;
+            this.showDeleteSelected = false;
         }
     }
 

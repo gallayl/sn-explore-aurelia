@@ -49,13 +49,13 @@ export class RoleHelper {
 
     private isInitialized = false;
     public async IsInRole(role: Role): Promise<boolean> {
-        await Retrier.Create(async () => this.isInitialized)
-            .Setup({
+        await Retrier.create(async () => this.isInitialized)
+            .setup({
                 RetryIntervalMs: 10,
                 Retries: 100000,
                 timeoutMs: 10000,
             })
-            .Run();
+            .run();
 
         if (this.roles.has(role)) {
             return this.roles.get(role) || false;
@@ -85,7 +85,9 @@ export class RoleHelper {
             this.groups = [];
             if (!isVisitor) {
                 try {
-                    const g: any = await this.repo.security.getParentGroups(u.Id, false);
+                    const g: any = await this.repo.security.getParentGroups({
+                        contentIdOrPath: u.Id,
+                        directOnly: false});
                     this.groups = g.d.results as Group[];
                 } catch (error) {
                     // tslint:disable-next-line:no-console

@@ -5,7 +5,7 @@ import { bindable, computedFrom, customElement } from 'aurelia-framework';
 import { dialog } from 'material-components-web/dist/material-components-web';
 import { SensenetCtdLanguage } from 'utils/monaco-languages/sensenet-ctd';
 import {File as SnFile, BinaryField} from "@sensenet/default-content-types";
-import { Repository } from '@sensenet/client-core';
+import { Repository, Upload } from '@sensenet/client-core';
 import { PathHelper } from '@sensenet/client-utils';
 
 @customElement('binary-text-editor')
@@ -84,7 +84,9 @@ export class BinaryTextEditor {
 
     }
 
+    private repository: Repository;
     public async open<T extends SnFile>(repo: Repository, content: T, fieldName: keyof T = 'Binary') {
+        this.repository = repo;
         this.isLoading = true;
         this.content = content;
         this.fieldName = fieldName;
@@ -94,13 +96,11 @@ export class BinaryTextEditor {
             `/binaryhandler.ashx?nodeid=${content.Id}&propertyname=${fieldName}`));
 
         if (downloadRequest.ok) {
-            // ToDo: Check me pls
             this.binaryData = await downloadRequest.text();
 
         } else {
             throw Error("Failed to download binary");
         }
-        // await this.content.GetRepository().Ajax(this.field.GetDownloadUrl(), 'GET', String, {}, [], false, 'text').toPromise();
         this.monacoEditorInstance.setValue(this.binaryData);
 
         if (!this.explicitSetupForContent(repo, content)) {
@@ -117,7 +117,6 @@ export class BinaryTextEditor {
 
         // for tabbing - monaco vs material design
         setTimeout(() => {
-            // this.editBinaryMDCDialog.set
             this.editBinaryMDCDialog.focusTrap_.deactivate();
         }, 500);
     }
@@ -127,8 +126,15 @@ export class BinaryTextEditor {
     }
 
     public async save() {
-        // ToDo: Upload me pls!!!
-        // await this.field.SaveBinaryText(this.monacoEditorInstance.getValue()).toPromise();
+        Upload.textAsFile({
+            parentPath: PathHelper.getParentPath(this.content.Path),
+            overwrite: true,
+            text: this.monacoEditorInstance.getValue(),
+            fileName: this.content.Name,
+            repository: this.repository,
+            contentTypeName: this.content.Type,
+            binaryPropertyName: this.fieldName,
+        })
         this.editBinaryMDCDialog.close();
     }
 }

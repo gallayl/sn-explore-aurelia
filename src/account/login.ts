@@ -5,6 +5,8 @@ import { Repository } from "@sensenet/client-core";
 import { ValidationController, ValidationControllerFactory, ValidationRules } from 'aurelia-validation';
 import { GoogleOauthProvider } from '@sensenet/authentication-google';
 
+const localStorageLastRepoKey = "SN7-AU-LAST-REPOSITORY-URL";
+
 @autoinject
 export class Login {
     public readonly heading = 'Login';
@@ -17,7 +19,7 @@ export class Login {
 
     public isLoginInProgress: boolean = false;
 
-    public readonly repositoryUrl: string;
+    public repositoryUrl: string;
 
     private controller: ValidationController;
 
@@ -57,6 +59,7 @@ export class Login {
             if (success) {
                 this.router.navigate('/');
                 this.error = '';
+                localStorage.setItem(localStorageLastRepoKey, this.snService.configuration.repositoryUrl);
             } else {
                 this.isLoginInProgress = false;
                 this.error = 'Error: failed to log in.';
@@ -68,6 +71,7 @@ export class Login {
     }
 
     public attached() {
+        this.snService.configuration.repositoryUrl = localStorage.getItem(localStorageLastRepoKey)
         const textfields = document.querySelectorAll('.login-wrapper .mdc-text-field');
         [].forEach.call(textfields, (textfield: any) => {
             // tslint:disable-next-line:no-unused-expression
