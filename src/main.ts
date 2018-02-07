@@ -9,11 +9,14 @@ import { PLATFORM } from 'aurelia-pal';
 import { Repository } from '@sensenet/client-core';
 import { JwtService } from "@sensenet/authentication-jwt"
 import { addGoogleAuth, GoogleOauthProvider } from '@sensenet/authentication-google';
+import { localStorageLastRepoKey } from 'account/login';
+
+
 
 const repo = new Repository(
   {
     sessionLifetime: 'expiration',
-    repositoryUrl: 'https://sensenet7-local', // 'https://dmsservice.demo.sensenet.com',
+    repositoryUrl: localStorage.getItem(localStorageLastRepoKey)
   });
 
 const jwtService = new JwtService(repo);

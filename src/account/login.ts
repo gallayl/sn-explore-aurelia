@@ -5,7 +5,7 @@ import { Repository } from "@sensenet/client-core";
 import { ValidationController, ValidationControllerFactory, ValidationRules } from 'aurelia-validation';
 import { GoogleOauthProvider } from '@sensenet/authentication-google';
 
-const localStorageLastRepoKey = "SN7-AU-LAST-REPOSITORY-URL";
+export const localStorageLastRepoKey = "SN7-AU-LAST-REPOSITORY-URL";
 
 @autoinject
 export class Login {
