@@ -1,9 +1,8 @@
 import { autoinject } from "aurelia-framework";
 import { Group } from "@sensenet/default-content-types";
 import { ObservableValue, Retrier } from "@sensenet/client-utils";
-import { Repository } from "@sensenet/client-core";
-import { ConstantContent } from "@sensenet/client-core/dist/Repository/ConstantContent";
-import { JwtService } from "@sensenet/authentication-jwt/dist/JwtService";
+import { Repository, ConstantContent } from "@sensenet/client-core";
+import { JwtService } from "@sensenet/authentication-jwt";
 
 export enum Role {
     IsGlobalAdministratorUser = 'IsGlobalAdministratorUser',
