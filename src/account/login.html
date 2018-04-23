@@ -10,20 +10,20 @@
                     <div class="mdc-form-field">                      
                         <label class="mdc-text-field">
                             <input required type="text" class="mdc-text-field__input" value.bind="userName & validate:rules" disabled.bind="isLoginInProgress">
-                            <span class="mdc-text-field__label">Username</span>
+                            <span class="mdc-text-field__label mdc-floating-label">Username</span>
                             <div class="mdc-text-field__bottom-line"></div>
                         </label>
                     </div>
                     <div class="mdc-form-field">
                         <label class="mdc-text-field">
                             <input required type="password" class="mdc-text-field__input" value.bind="password & validate:rules" disabled.bind="isLoginInProgress">
-                            <span class="mdc-text-field__label">Password</span>
+                            <span class="mdc-text-field__label mdc-floating-label">Password</span>
                         </label>
                     </div>
                     <div>
                         <label class="mdc-text-field" style="width: 100%;">
                             <input required type="text" class="mdc-text-field__input" value.bind="snService.configuration.repositoryUrl & validate:rules" disabled.bind="isLoginInProgress">
-                            <span class="mdc-text-field__label">Repository URL</span>
+                            <span class="mdc-text-field__label mdc-floating-label">Repository URL</span>
                             <div class="mdc-text-field__bottom-line"></div>
                         </label>  
                     </div>                    

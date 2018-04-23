@@ -2,7 +2,7 @@ import { MDCTextField } from '@material/textfield/dist/mdc.textfield';
 import { autoinject, bindable, computedFrom } from "aurelia-framework";
 import { Router } from "aurelia-router";
 import { BinaryTextEditor } from "explore/binary-text-editor";
-import { SetPermissionsDialog, AddContentDialog, EditContentDialog, DeleteContent, CollectionView} from "@sensenet/controls-aurelia";
+import { SetPermissionsDialog, AddContentDialog, EditContentDialog, DeleteContent, CollectionView } from "@sensenet/controls-aurelia";
 import { IContent, Repository, Upload } from '@sensenet/client-core';
 import { ActionName } from '@sensenet/control-mapper';
 import { GenericContent, IActionModel } from '@sensenet/default-content-types';
@@ -66,15 +66,19 @@ export class Index {
         this.ViewType = newType;
     }
 
+    public async refreshSchema() {
+        this.snService.reloadSchema();
+    }
 
     public async GetSelectedChildren(scope: GenericContent, q?: Query<IContent>): Promise<IContent[]> {
         const collection = await this.snService.loadCollection<any>({
             path: scope.Path,
-            oDataOptions: {            
+            oDataOptions: {
                 select: ['Icon', 'ParentId', 'Actions', 'IsFolder'],
                 expand: ['Actions'],
                 query: q && q.toString(),
-                orderby: ['IsFolder desc', 'DisplayName asc'],}
+                orderby: ['IsFolder desc', 'DisplayName asc'],
+            }
         });
         return collection.d.results;
     }
@@ -94,9 +98,9 @@ export class Index {
     private eventHub: EventHub;
 
     constructor(private snService: Repository,
-                private router: Router
-            ) {
-                this.eventHub = new EventHub(this.snService);
+        private router: Router
+    ) {
+        this.eventHub = new EventHub(this.snService);
     }
 
     public async activate(params) {
@@ -106,7 +110,7 @@ export class Index {
         this.rootContent = (await this.snService.load({
             idOrPath: '/Root',
             oDataOptions: {
-            select: 'all',
+                select: 'all',
             }
         })).d;
     }
@@ -115,7 +119,7 @@ export class Index {
     public scopeChanged() {
         this.contentMoveSubscription && this.contentMoveSubscription.dispose();
         this.router.navigateToRoute('explore', { path: this.scope.Path }, { replace: true });
-        this.contentMoveSubscription = this.eventHub.onContentMoved.subscribe((m)=>{
+        this.contentMoveSubscription = this.eventHub.onContentMoved.subscribe((m) => {
             this.router.navigateToRoute('explore', { path: m.content.Path }, { replace: true });
         })
     }
@@ -123,7 +127,7 @@ export class Index {
     @bindable
     public EditedContent: IContent;
     public EditItem(content: IContent) {
-        this.editContentDialog.open(content);
+        this.editContentDialog.open({...content});
     }
     public changePath(path: string) {
         this.snService.load({
@@ -152,8 +156,8 @@ export class Index {
     public ContentListDropped(contentList: IContent[]) {
         this.snService.move({
             targetPath: this.scope.Path,
-            idOrPath: contentList.map(c=>c.Id),
-        })        
+            idOrPath: contentList.map(c => c.Id),
+        })
     }
 
     public ContentDroppedOnItem(content: IContent, item: IContent) {
@@ -166,8 +170,8 @@ export class Index {
     public ContentListDroppedOnItem(contentList: IContent[], item: IContent) {
         this.snService.move({
             targetPath: item.Path,
-            idOrPath: contentList.map(c=>c.Id),
-        })        
+            idOrPath: contentList.map(c => c.Id),
+        })
     }
 
     public async FilesDropped(_event: DragEvent) {
@@ -226,10 +230,11 @@ export class Index {
     }
 
     public getActions(content: GenericContent): IActionModel[] {
-
-        return ((content as any).Actions as IActionModel[]).filter((a) => {
+        if (content && content.Actions) {
+            return ((content as any).Actions as IActionModel[]).filter((a) => {
                 return ['Delete', 'SetPermissions', 'Edit', 'BinarySpecial'].indexOf(a.Name) > -1;
             });
+        } return []
     }
     public onAction(content: IContent, action: IActionModel) {
         switch (action.Name) {
@@ -240,7 +245,7 @@ export class Index {
                 this.setPermissionsDialog.open(content);
                 break;
             case 'Edit':
-                if (content.Type === "ContentType"){
+                if (content.Type === "ContentType") {
                     this.binaryTextEditor.open(this.snService, content as any);
                 } else {
                     this.EditItem(content);

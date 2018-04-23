@@ -25,7 +25,7 @@
                             <div class="mdc-form-field searchBar ${searchEnabled ? '' : 'hidden'}" ref="searchBar">
                                 <label class="mdc-text-field">
                                     <input ref='searchInput' type="text" class="mdc-text-field__input" value.two-way="queryString & debounce">
-                                    <span class="mdc-text-field__label">Search content</span>
+                                    <span class="mdc-text-field__label mdc-floating-label">Search content</span>
                                     <div class="mdc-text-field__bottom-line"></div>
                                 </label>
                             </div>
@@ -33,6 +33,7 @@
                             <a click.delegate="toggleExploreDrawer()" class="material-icons mdc-toolbar__icon--menu">menu</a>
                             <a click.delegate="setViewType('List')" class="material-icons mdc-toolbar__icon--menu">list</a>
                             <a click.delegate="setViewType('Details')" class="material-icons mdc-toolbar__icon--menu">view_module</a>
+                            <a click.delegate="refreshSchema()" class="material-icons mdc-toolbar__icon--menu">refresh</a>
                         </section>
                     </div>
                 </header>
